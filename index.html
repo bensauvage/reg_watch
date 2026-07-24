@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LU Branch — Regulatory Watch</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a3558;--navy2:#243b6e;
+  --blue:#2563eb;--blue-light:#dbeafe;--blue-mid:#93c5fd;
+  --green:#059669;--green-light:#d1fae5;
+  --amber:#d97706;--amber-light:#fef3c7;
+  --orange:#ea580c;--orange-light:#ffedd5;
+  --red:#dc2626;--red-light:#fee2e2;
+  --teal:#0d9488;--teal-light:#ccfbf1;
+  --purple:#7c3aed;--purple-light:#ede9fe;
+  --gray:#6b7280;--gray-light:#f3f4f6;
+  --bg:#eef2f7;--card:#fff;
+  --text:#1e293b;--text2:#475569;--border:#e2e8f0;
+  --sh:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --sh-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+  --sh-lg:0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.05);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;font-size:14px}
+
+.site-header{background:var(--navy);color:#fff;padding:18px 32px 14px}
+.hdr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.hdr-title{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
+.hdr-meta{display:flex;gap:20px;margin-top:6px;font-size:.75rem;color:#94a3b8}
+.hdr-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#e2e8f0;border-radius:6px;padding:4px 10px;font-size:.72rem;font-weight:600;white-space:nowrap}
+
+.countdown-bar{background:linear-gradient(135deg,#0f2744 0%,#1a3558 100%);border-top:1px solid rgba(255,255,255,.08);padding:14px 32px}
+.cdown-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cdown-hdr-left{display:flex;align-items:center;gap:8px}
+.cdown-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#64748b}
+.cdown-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.cdown-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:11px 10px;text-align:center;min-width:0;cursor:pointer;transition:background .15s}
+.cdown-card:hover{background:rgba(255,255,255,.1)}
+.cdown-card .cname{font-size:.68rem;color:#94a3b8;font-weight:500;line-height:1.3;min-height:2.4em;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.cdown-card .cdays{font-size:2rem;font-weight:900;color:#fff;line-height:1;font-variant-numeric:tabular-nums}
+.cdown-card .cdays.urgent{color:#fbbf24}
+.cdown-card .cdays.soon{color:#fb923c}
+.cdown-card .cdays.past{color:#4b5563;text-decoration:line-through}
+.cdown-card .cunit{font-size:.65rem;color:#4b5563;margin-top:1px}
+.cdown-card .chms{font-size:.7rem;color:#475569;margin-top:4px;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.cdown-card .ctarget{font-size:.63rem;color:#374151;margin-top:5px}
+.btn-cfg{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#cbd5e1;border-radius:6px;padding:5px 12px;font-size:.73rem;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .15s}
+.btn-cfg:hover{background:rgba(255,255,255,.18)}
+
+.main-wrap{max-width:1440px;margin:0 auto;padding:20px 32px}
+.view-nav{display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.view-btn{padding:6px 18px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--text2);font-size:.82rem;cursor:pointer;font-weight:500;transition:all .15s;box-shadow:var(--sh)}
+.view-btn.active,.view-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.view-btn.active{font-weight:700}
+.view-sep{color:var(--border);font-size:1.2rem;margin:0 4px}
+.active-filter-tag{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:var(--blue-light);color:#1d4ed8;border-radius:20px;font-size:.73rem;font-weight:600;border:1px solid var(--blue-mid)}
+.active-filter-tag button{background:none;border:none;cursor:pointer;color:#1d4ed8;font-size:.9rem;line-height:1;padding-left:4px}
+
+.section{margin-bottom:24px}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--card);border-radius:10px;padding:16px 20px;box-shadow:var(--sh);border-left:4px solid var(--navy)}
+.stat-card .s-label{font-size:.72rem;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.stat-card .s-value{font-size:2.2rem;font-weight:900;color:var(--navy);line-height:1.1;margin-top:2px}
+.stat-card .s-sub{font-size:.72rem;color:var(--gray);margin-top:2px}
+
+.dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.dash-card{background:var(--card);border-radius:10px;padding:16px;box-shadow:var(--sh)}
+.dash-card h3{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.drow{display:flex;align-items:center;padding:6px 8px;border-radius:7px;cursor:pointer;transition:all .12s;gap:8px;border:1px solid transparent}
+.drow:hover{background:var(--blue-light);border-color:var(--blue-mid)}
+.drow .dr-name{font-size:.82rem;color:var(--text);flex:1;min-width:0;transition:color .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drow:hover .dr-name{color:var(--blue)}
+.drow-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-right:2px}
+.drow .dr-status-name{font-size:.81rem;color:var(--text);flex:1;min-width:0;transition:color .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drow:hover .dr-status-name{color:var(--blue)}
+.drow .dr-count{font-size:.82rem;font-weight:800;color:var(--navy);min-width:22px;text-align:right;transition:color .12s}
+.drow:hover .dr-count{color:var(--blue)}
+.drow .dr-avg{font-size:.72rem;color:var(--text2);min-width:52px;text-align:right}
+.drow .drow-arrow{font-size:.75rem;color:var(--blue);opacity:0;transform:translateX(-4px);transition:opacity .12s,transform .12s;flex-shrink:0}
+.drow:hover .drow-arrow{opacity:1;transform:translateX(0)}
+.drow-hdr{display:flex;padding:3px 6px;gap:8px}
+.drow-hdr span{font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.06em}
+.drow-hdr .dh-name{flex:1}
+.drow-hdr .dh-count{min-width:22px;text-align:right}
+.drow-hdr .dh-avg{min-width:52px;text-align:right}
+.dash-card h3{display:flex;align-items:center;justify-content:space-between}
+.dash-card-hint{font-size:.65rem;color:var(--gray);font-weight:400;text-transform:none;letter-spacing:0}
+
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:.68rem;font-weight:700;white-space:nowrap;line-height:1.4}
+.b-green{background:var(--green-light);color:#064e3b}
+.b-blue{background:var(--blue-light);color:#1e40af}
+.b-blue2{background:#e0f2fe;color:#0c4a6e}
+.b-amber{background:var(--amber-light);color:#78350f}
+.b-orange{background:var(--orange-light);color:#7c2d12}
+.b-gray{background:var(--gray-light);color:#374151}
+.b-teal{background:var(--teal-light);color:#134e4a}
+.b-purple{background:var(--purple-light);color:#4c1d95}
+
+.filters-bar{background:var(--card);border-radius:10px;padding:12px 16px;box-shadow:var(--sh);margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fsearch{flex:1;min-width:180px;position:relative}
+.fsearch input{width:100%;padding:7px 10px 7px 32px;border:1px solid var(--border);border-radius:6px;font-size:.83rem;color:var(--text);outline:none;background:#fff}
+.fsearch input:focus{border-color:var(--blue)}
+.fsearch .si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--gray);font-size:.85rem}
+.fsel{padding:7px 28px 7px 10px;border:1px solid var(--border);border-radius:6px;font-size:.8rem;color:var(--text);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;appearance:none;cursor:pointer;outline:none}
+.fsel:focus{border-color:var(--blue)}
+.fcount{font-size:.78rem;color:var(--text2);margin-left:auto;white-space:nowrap}
+.btn-clr{padding:7px 12px;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text2);font-size:.78rem;cursor:pointer}
+.btn-clr:hover{background:var(--gray-light)}
+
+.tbl-wrap{background:var(--card);border-radius:10px;box-shadow:var(--sh);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead th{background:#f8fafc;padding:9px 12px;text-align:left;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);border-bottom:2px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;transition:color .1s}
+thead th:hover{color:var(--navy)}
+tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .08s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#f8fafc}
+tbody td{padding:9px 12px;font-size:.81rem;vertical-align:top}
+.td-id{color:var(--gray);font-weight:600;font-size:.75rem;white-space:nowrap}
+.ttag{display:inline-block;padding:2px 7px;background:#e0f2fe;color:#075985;border-radius:4px;font-size:.68rem;font-weight:600;line-height:1.4}
+.td-summary{max-width:300px}
+.td-summary-txt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.45;color:var(--text)}
+.td-date{white-space:nowrap;color:var(--text2);font-size:.77rem}
+.td-issuer{white-space:nowrap;font-weight:600;font-size:.78rem}
+.td-cpx{text-align:center;white-space:nowrap}
+.cpill{display:inline-flex;width:22px;height:22px;border-radius:50%;align-items:center;justify-content:center;font-size:.72rem;font-weight:800}
+.c1{background:#dcfce7;color:#166534}
+.c2{background:#d1fae5;color:#065f46}
+.c3{background:#fef9c3;color:#713f12}
+.c4{background:#fed7aa;color:#9a3412}
+.c5{background:#fecaca;color:#991b1b}
+.td-link a{color:var(--blue);font-size:.75rem;text-decoration:none}
+.td-link a:hover{text-decoration:underline}
+
+.tbl-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:.78rem;color:var(--text2)}
+.pg-wrap{display:flex;gap:4px}
+.pg-btn{padding:4px 9px;border:1px solid var(--border);border-radius:5px;background:#fff;color:var(--text2);font-size:.78rem;cursor:pointer;transition:all .1s}
+.pg-btn:hover,.pg-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.pg-btn.active{font-weight:700}
+.pg-btn:disabled{opacity:.35;cursor:not-allowed}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-state .ei{font-size:2.5rem;margin-bottom:10px}
+
+/* ── NEW / UPDATED ITEMS ── */
+tbody tr.item-new{background:#fffbeb}
+tbody tr.item-new:hover{background:#fef3c7}
+tbody tr.item-new td.td-id::after{content:"NEW";display:inline-block;margin-left:4px;font-size:.58rem;font-weight:800;background:#d97706;color:#fff;border-radius:3px;padding:1px 4px;vertical-align:middle;line-height:1.4}
+.new-badge{display:inline-flex;align-items:center;justify-content:center;background:#d97706;color:#fff;border-radius:10px;font-size:.65rem;font-weight:800;padding:1px 7px;margin-left:6px;vertical-align:middle}
+.dp-new-banner{background:#fef3c7;border:1px solid #fde68a;border-radius:7px;padding:9px 13px;font-size:.8rem;color:#92400e;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.btn-new-filter{padding:6px 14px;border-radius:7px;border:1px solid #fde68a;background:#fffbeb;color:#92400e;font-size:.8rem;cursor:pointer;font-weight:600;transition:all .15s}
+.btn-new-filter.active,.btn-new-filter:hover{background:#d97706;color:#fff;border-color:#d97706}
+
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:none;align-items:flex-start;justify-content:flex-end}
+.panel-overlay.open{display:flex}
+.detail-panel{width:580px;max-width:100%;height:100vh;background:#fff;overflow-y:auto;box-shadow:var(--sh-lg);animation:slideIn .2s ease}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.dp-header{padding:18px 22px 14px;background:var(--navy);color:#fff;position:sticky;top:0;z-index:1}
+.dp-header .dp-id{font-size:.7rem;color:#94a3b8;font-weight:700;letter-spacing:.08em;margin-bottom:3px}
+.dp-header h2{font-size:.98rem;font-weight:800;line-height:1.4;padding-right:32px}
+.dp-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
+.dp-close:hover{background:rgba(255,255,255,.25)}
+.dp-body{padding:18px 22px}
+.dp-section{margin-bottom:18px}
+.dp-section-lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text2);margin-bottom:6px}
+.dp-text{font-size:.86rem;color:var(--text);line-height:1.65}
+.dp-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.dp-meta-item{background:var(--gray-light);border-radius:8px;padding:10px 12px}
+.dp-meta-item .ml{font-size:.67rem;color:var(--text2);font-weight:700;text-transform:uppercase;margin-bottom:2px}
+.dp-meta-item .mv{font-size:.83rem;color:var(--text);font-weight:500;line-height:1.4}
+.cpx-row{display:flex;gap:20px;margin-bottom:6px}
+.cpx-item{flex:1}
+.cpx-item-lbl{font-size:.7rem;color:var(--text2);margin-bottom:4px}
+.cpx-bar-wrap{display:flex;align-items:center;gap:8px}
+.cpx-num{font-size:.95rem;font-weight:800;min-width:14px}
+.cpx-bar{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden}
+.cpx-fill{height:100%;border-radius:4px;transition:width .3s}
+.btn-ext{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:var(--blue);color:#fff;border-radius:7px;font-size:.83rem;font-weight:700;text-decoration:none;margin-top:4px;transition:background .15s}
+.btn-ext:hover{background:#1d4ed8}
+.dp-divider{border:none;border-top:1px solid var(--border);margin:16px 0}
+
+.cfg-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}
+.cfg-overlay.open{display:flex}
+.cfg-modal{background:#fff;border-radius:12px;box-shadow:var(--sh-lg);width:540px;max-width:92%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column}
+.cfg-modal-hdr{padding:20px 24px 14px;border-bottom:1px solid var(--border)}
+.cfg-modal-hdr h2{font-size:1rem;font-weight:800;color:var(--navy)}
+.cfg-modal-hdr p{font-size:.78rem;color:var(--text2);margin-top:3px}
+.cfg-list{flex:1;overflow-y:auto;padding:14px 24px}
+.cfg-opt{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .1s;margin-bottom:7px}
+.cfg-opt:hover{background:var(--gray-light)}
+.cfg-opt.checked{background:var(--blue-light);border-color:var(--blue-mid)}
+.cfg-opt input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--blue);flex-shrink:0}
+.cfg-opt .co-name{font-size:.83rem;font-weight:600;color:var(--text);flex:1}
+.cfg-opt .co-date{font-size:.72rem;color:var(--text2);white-space:nowrap}
+.cfg-opt .co-diff{font-size:.68rem;color:var(--text2);white-space:nowrap;min-width:56px;text-align:right}
+.cfg-modal-ftr{padding:12px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:#f8fafc}
+.btn-prim{padding:8px 22px;background:var(--navy);color:#fff;border:none;border-radius:7px;font-size:.83rem;font-weight:700;cursor:pointer}
+.btn-prim:hover{background:var(--navy2)}
+.btn-sec{padding:8px 16px;background:#fff;color:var(--text);border:1px solid var(--border);border-radius:7px;font-size:.83rem;cursor:pointer}
+.btn-sec:hover{background:var(--gray-light)}
+.cfg-max-note{font-size:.72rem;font-weight:600;margin-right:auto;display:flex;align-items:center}
+
+.legend{background:var(--card);border-radius:10px;padding:14px 18px;box-shadow:var(--sh);margin-top:20px;font-size:.75rem;color:var(--text2);line-height:1.7}
+.legend strong{color:var(--text);font-weight:700}
+
+.build-stamp{font-size:.68rem;color:#64748b;text-align:right;padding:8px 32px;font-style:italic}
+
+@media(max-width:1000px){
+  .cdown-grid{grid-template-columns:repeat(3,1fr)}
+  .dash-grid{grid-template-columns:1fr 1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .main-wrap{padding:16px}
+}
+@media(max-width:640px){
+  .site-header{padding:14px 16px}
+  .countdown-bar{padding:12px 16px}
+  .cdown-grid{grid-template-columns:1fr 1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr}
+  .main-wrap{padding:12px 14px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="hdr-top">
+    <div>
+      <div class="hdr-title">Luxembourg Branch — Regulatory Watch</div>
+      <div class="hdr-meta">
+        <span>🔍 Scope: private banking &amp; mortgage — EU Commission, EP, Council, ESMA, EBA, AMLA, ECB, CSSF, MoF LU</span>
+      </div>
+    </div>
+    <div class="hdr-badge" id="hdr-badge">Loading…</div>
+  </div>
+</header>
+
+<div class="countdown-bar">
+  <div class="cdown-hdr">
+    <div class="cdown-hdr-left">
+      <span class="cdown-label">⏱ Key Deadlines Countdown</span>
+    </div>
+    <button class="btn-cfg" onclick="openCfg()">
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" fill-rule="evenodd" clip-rule="evenodd"/></svg>
+      Configure
+    </button>
+  </div>
+  <div class="cdown-grid" id="cdown-grid"></div>
+</div>
+
+<div class="main-wrap">
+  <div class="view-nav" id="view-nav">
+    <button class="view-btn active" onclick="showView('dashboard')">📊 Dashboard</button>
+    <button class="view-btn" onclick="showView('list')">📋 All Regulations<span class="new-badge" id="nav-new-badge" style="display:none"></span></button>
+    <span class="view-sep" id="filter-sep" style="display:none">›</span>
+    <span class="active-filter-tag" id="active-filter-tag" style="display:none">
+      <span id="active-filter-text"></span>
+      <button onclick="clearActiveFilter()">✕</button>
+    </span>
+  </div>
+
+  <!-- Dashboard view (fully rendered by JS from ITEMS) -->
+  <div id="view-dashboard">
+    <div class="stats-row" id="dash-stats"></div>
+    <div class="dash-grid" id="dash-grid"></div>
+    <div class="legend">
+      <strong>Complexity scale:</strong>
+      1 = minimal effort &nbsp;|&nbsp; 2 = focused policy review &nbsp;|&nbsp; 3 = material cross-function project &nbsp;|&nbsp;
+      4 = multi-stream programme with IT build &nbsp;|&nbsp; 5 = strategic overhaul (branch-wide, including IT rebuilds).<br>
+      <strong>Sources:</strong> eur-lex.europa.eu · finance.ec.europa.eu · consilium.europa.eu · europarl.europa.eu · esma.europa.eu · eba.europa.eu · amla.europa.eu · ecb.europa.eu · cssf.lu · legilux.public.lu · mfin.gouvernement.lu
+    </div>
+  </div>
+
+  <!-- List view -->
+  <div id="view-list" style="display:none">
+    <div class="filters-bar">
+      <div class="fsearch">
+        <span class="si">🔍</span>
+        <input type="text" id="search-input" placeholder="Search regulations…" oninput="applyFilters()">
+      </div>
+      <select class="fsel" id="filter-topic" onchange="applyFilters()"><option value="">All Topics</option></select>
+      <select class="fsel" id="filter-issuer" onchange="applyFilters()"><option value="">All Issuers</option></select>
+      <select class="fsel" id="filter-status" onchange="applyFilters()"><option value="">All Statuses</option></select>
+      <select class="fsel" id="filter-sort" onchange="applyFilters()">
+        <option value="id">Sort: #</option>
+        <option value="topic">Sort: Topic</option>
+        <option value="issuer">Sort: Issuer</option>
+        <option value="status">Sort: Status</option>
+        <option value="cpxOrga">Sort: Complexity ↓</option>
+      </select>
+      <button class="btn-new-filter" id="btn-new-filter" onclick="toggleNewFilter()">🆕 New only</button>
+      <button class="btn-clr" onclick="clearAllFilters()">Clear</button>
+      <span class="fcount" id="fcount"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px">#</th>
+            <th style="width:140px">Topic</th>
+            <th>Summary</th>
+            <th style="width:130px">Pub. Date</th>
+            <th style="width:120px">Issuer</th>
+            <th style="width:145px">Status</th>
+            <th style="width:55px" title="Complexity Organisation / IT">Cpx</th>
+            <th style="width:60px">Link</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-body"></tbody>
+      </table>
+      <div class="tbl-footer">
+        <span id="page-info"></span>
+        <div class="pg-wrap" id="pg-wrap"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail panel -->
+<div class="panel-overlay" id="panel-overlay" onclick="closePanel(event)">
+  <div class="detail-panel" id="detail-panel">
+    <div class="dp-header">
+      <div class="dp-id" id="dp-id"></div>
+      <h2 id="dp-title"></h2>
+      <button class="dp-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="dp-body">
+      <div class="dp-new-banner" id="dp-new-banner" style="display:none">🆕 New or updated since last check</div>
+      <div class="dp-meta-grid">
+        <div class="dp-meta-item"><div class="ml">Topic</div><div class="mv" id="dp-topic"></div></div>
+        <div class="dp-meta-item"><div class="ml">Issuer</div><div class="mv" id="dp-issuer"></div></div>
+        <div class="dp-meta-item"><div class="ml">Status</div><div class="mv" id="dp-status"></div></div>
+        <div class="dp-meta-item"><div class="ml">Publication Date</div><div class="mv" id="dp-pubdate"></div></div>
+      </div>
+      <div class="dp-meta-item" style="margin-bottom:14px">
+        <div class="ml">Expected Date of Application</div>
+        <div class="mv" id="dp-appdate" style="font-size:.88rem"></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-lbl">Summary</div>
+        <div class="dp-text" id="dp-summary"></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-lbl">Potential Impact on Branch</div>
+        <div class="dp-text" id="dp-impact"></div>
+      </div>
+      <hr class="dp-divider">
+      <div class="dp-section-lbl" style="margin-bottom:10px">Complexity Assessment</div>
+      <div class="cpx-row">
+        <div class="cpx-item">
+          <div class="cpx-item-lbl">Organisation</div>
+          <div class="cpx-bar-wrap">
+            <span class="cpx-num" id="dp-cpx-orga"></span>
+            <div class="cpx-bar"><div class="cpx-fill" id="dp-cpx-orga-bar"></div></div>
+          </div>
+        </div>
+        <div class="cpx-item">
+          <div class="cpx-item-lbl">IT</div>
+          <div class="cpx-bar-wrap">
+            <span class="cpx-num" id="dp-cpx-it"></span>
+            <div class="cpx-bar"><div class="cpx-fill" id="dp-cpx-it-bar"></div></div>
+          </div>
+        </div>
+      </div>
+      <hr class="dp-divider">
+      <div class="dp-section">
+        <div class="dp-section-lbl">Original Publication</div>
+        <a class="btn-ext" id="dp-link" href="#" target="_blank" rel="noopener">
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/><path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/></svg>
+          Open source document
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Config modal -->
+<div class="cfg-overlay" id="cfg-overlay" onclick="closeCfgOutside(event)">
+  <div class="cfg-modal">
+    <div class="cfg-modal-hdr">
+      <h2>Configure Countdown Timers</h2>
+      <p>Select up to 5 key regulatory deadlines to display in the countdown bar.</p>
+    </div>
+    <div class="cfg-list" id="cfg-list"></div>
+    <div class="cfg-modal-ftr">
+      <span class="cfg-max-note" id="cfg-max-note"></span>
+      <button class="btn-sec" onclick="closeCfg()">Cancel</button>
+      <button class="btn-prim" onclick="saveCfg()">Apply</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  DATA — auto-generated by build_site.py
+// ══════════════════════════════════════════════════════
+const BUILD_META = {lastUpdate:"23 July 2026",builtAt:"2026-07-23 10:48",itemCount:81,newCount:48};
+const ITEMS = [
+  {id:1,topic:"MiFID / Investment Services",summary:"Retail Investment Strategy (RIS) — omnibus reform of MiFID II, IDD, UCITS, AIFMD, PRIIPs and Solvency II. Introduces value-for-money benchmarks on costs/performance, revised inducement rules with enhanced test & reporting, single disclosure document, reinforced suitability & appropriateness tests, marketing communications register, professional-clients-on-request threshold review, digital-first disclosures.",impact:"High impact on private banking: review of discretionary mandate fee grids, rebate/retrocession policy, value-for-money files on model portfolios, revamp of suitability questionnaires and reports, full update of costs & charges ex-ante/ex-post disclosures, revised product governance (target market), staff training and certification.",pubDate:"13 Dec 2025 (political agreement)",issuer:"EP & Council (co-legislators)",status:"Political agreement (awaiting OJ)",appDate:"≈Q2 2028 (MiFID: 24m from OJ); 18m for PRIIPs amendments",cpxOrga:5,cpxIT:5,link:"https://www.consilium.europa.eu/en/policies/retail-investment-strategy/",isNew:false},
+  {id:2,topic:"MiFID / Investment Services",summary:"ESMA RTS on order execution policies (Art. 27(10) MiFID II as revised) — criteria for establishing, monitoring and assessing effectiveness of execution policies; venue classification & selection; documentation of own-account dealing.",impact:"Rewrite of best-execution policy, venue selection methodology, quarterly monitoring of execution quality; IT changes for evidence trail and reporting; relevant for order routing for private banking discretionary and RTO flows.",pubDate:"18 Apr 2025 (ESMA final report)",issuer:"ESMA",status:"Adopted (not yet applicable)",appDate:"≈Q4 2026 / Q1 2027 (after EC endorsement)",cpxOrga:3,cpxIT:3,link:"https://www.esma.europa.eu/sites/default/files/2025-04/ESMA35-335435667-6253_Final_Report_-_MiFID_II_RTS_on_order_execution_policies.pdf",isNew:false},
+  {id:3,topic:"MiFID / Investment Services",summary:"ESMA consultation on amendments to the MiFID II research regime — clarifying rules on joint payments for execution and research post-Listing Act amendment.",impact:"Re-documentation of research procurement, budgeting, allocation to client portfolios; minor-to-moderate policy rewrite.",pubDate:"2025/2026 (open consultation)",issuer:"ESMA",status:"Public consultation",appDate:"Level 2 to follow MiFID review timeline",cpxOrga:2,cpxIT:2,link:"https://www.esma.europa.eu/press-news/esma-news/esma-consults-amendments-mifid-research-regime",isNew:false},
+  {id:4,topic:"MiFID / Investment Services",summary:"MiFID II Quick Fix / Listing Act amendments to Directive 2014/65/EU — tick size, simplified disclosures for bonds, SME growth market adjustments.",impact:"Capital markets desk: update of tick-size tables, bond prospectus-light workflow, SME growth market procedures.",pubDate:"14 Nov 2024 (OJ — Listing Act)",issuer:"EP & Council (co-legislators)",status:"Partially applicable",appDate:"Various — most provisions 2025/2026",cpxOrga:2,cpxIT:2,link:"https://eur-lex.europa.eu/eli/dir/2024/2811/oj",isNew:false},
+  {id:5,topic:"Listing / Prospectus",summary:"Listing Act - Wave 2 Prospectus Regulation amendments: simplified secondary issuance prospectus, EU Follow-on Prospectus, EU Growth Issuance Document, URD streamlining, standardised sequence & format of base prospectuses & final terms. Level 1 amendments became applicable on 5 June 2026; the related Prospectus Delegated Regulation amendments (Delegated Act adopted 7 May 2026) have delayed applicability, with ESMA recommending interim use of the adopted Delegated Act provisions.",impact:"Treasury / EMTN programmes and structured-product issuance: prospectus template update, annexes re-sequencing, base-prospectus workflow review; limited direct impact on pure private banking advisory.",pubDate:"14 Nov 2024 (OJ)",issuer:"EP & Council (co-legislators)",status:"Applicable / In force",appDate:"Applied from 5 June 2026 (Level 1)",cpxOrga:3,cpxIT:2,link:"https://eur-lex.europa.eu/eli/reg/2024/2809/oj",isNew:false},
+  {id:6,topic:"Listing / Prospectus",summary:"ESMA public statement supporting smooth implementation of the Listing Act prospectus changes — transition treatment of pending prospectuses, approach to ESMA32 technical instructions pending Level 2.",impact:"Operational guidance note for the capital markets team; update internal 'prospectus Q&A' memorandum.",pubDate:"18 Feb 2026",issuer:"ESMA",status:"Applicable / In force",appDate:"Applies from 18 Feb 2026",cpxOrga:2,cpxIT:1,link:"https://www.esma.europa.eu/press-news/esma-news/esma-publishes-statement-supporting-smooth-implementation-listing-act",isNew:false},
+  {id:7,topic:"Listing / Prospectus",summary:"EC Delegated Act amending Commission Delegated Regulation 2019/980 — adopted on 7 May 2026. Revises prospectus format and sequencing of information items and introduces a new annex with disclosure requirements for non-equity securities marketed as ESG-related. Now subject to a 3-month Parliament/Council scrutiny period before publication in the OJ; will enter into force 3 days after OJ.",impact:"Update of drafting templates and XBRL tagging workflow for prospectuses.",pubDate:"7 May 2026",issuer:"EU Commission",status:"Adopted (not yet applicable)",appDate:"OJ Q3 2026; entry into force 3 days after OJ",cpxOrga:2,cpxIT:2,link:"https://finance.ec.europa.eu/regulation-and-supervision/financial-services-legislation/implementing-and-delegated-acts/prospectus-regulation_en",isNew:false},
+  {id:8,topic:"AML/CFT",summary:"AML Regulation (Reg (EU) 2024/1624 — 'AMLR') — single directly-applicable rulebook: CDD, EDD/SDD, beneficial ownership, PEPs, reliance on third parties, transfer of funds rules, record-keeping, internal control requirements.",impact:"Full rewrite of AML policy, KYC onboarding flows and ongoing-due-diligence triggers; enhanced source-of-wealth/source-of-funds evidencing for private banking clients; screening/BO register integration; staff training; branch must align with parent group AML policy but apply LU specifics.",pubDate:"19 Jun 2024 (OJ)",issuer:"EP & Council (co-legislators)",status:"Adopted (not yet applicable)",appDate:"10 July 2027",cpxOrga:5,cpxIT:4,link:"https://eur-lex.europa.eu/eli/reg/2024/1624/oj",isNew:false},
+  {id:9,topic:"AML/CFT",summary:"6th AML Directive (Dir (EU) 2024/1640 — 'AMLD6') — Member-State obligations on FIU, BO register access, national risk assessment, cross-border cooperation, sanctions, statistics.",impact:"Monitor LU transposition (amendments to Law of 12 Nov 2004); update access procedures to BO register, FIU reporting flows, fit-and-proper procedures.",pubDate:"19 Jun 2024 (OJ)",issuer:"EP & Council (co-legislators)",status:"Adopted (not yet applicable)",appDate:"10 July 2027 (general transposition)",cpxOrga:3,cpxIT:2,link:"https://eur-lex.europa.eu/eli/dir/2024/1640/oj",isNew:false},
+  {id:10,topic:"AML/CFT",summary:"AMLA Regulation (Reg (EU) 2024/1620) — establishing the EU AML Authority in Frankfurt; direct supervision of ~40 selected obliged entities and indirect supervision of the rest via NCAs; power to issue RTS, guidelines, Q&As.",impact:"Prepare for AMLA selection criteria (cross-border presence, risk profile); strengthen governance & data availability for indirect supervision via CSSF.",pubDate:"19 Jun 2024 (OJ)",issuer:"EP & Council (co-legislators)",status:"Partially applicable",appDate:"Direct supervision: 2028",cpxOrga:3,cpxIT:2,link:"https://eur-lex.europa.eu/eli/reg/2024/1620/oj",isNew:false},
+  {id:11,topic:"AML/CFT",summary:"AMLA draft RTS on Customer Due Diligence (Art. 28(1) AMLR). Written-submission window closed 8 May 2026 after first public hearing on 24 March 2026 (~1,600 stakeholders). AMLA will finalise the draft and submit to the Commission by 10 July 2026 for endorsement; applicable alongside AMLR on 10 July 2027.",impact:"Highest AML priority of 2026: full CDD framework re-write, remote onboarding gap analysis, documentation uplift, risk-scoring methodology recalibration.",pubDate:"9 Feb 2026 (consultation launched)",issuer:"AMLA",status:"Level 2 pending",appDate:"Consultation closed 8 May 2026; final RTS submitted to European Commission 10 Jul 2026, pending Commission adoption; applicable 10 Jul 2027",cpxOrga:5,cpxIT:4,link:"https://www.amla.europa.eu/policy/regulatory-instruments_en",isNew:false},
+  {id:12,topic:"AML/CFT",summary:"AMLA draft RTS on pecuniary sanctions & administrative measures — methodology for calibration of AML sanctions by NCAs.",impact:"Policy impact limited for 1st line; compliance/legal need to update sanctions-exposure assessments.",pubDate:"9 Feb 2026 (consultation)",issuer:"AMLA",status:"Level 2 pending",appDate:"Consultation closed 9 Mar 2026; final RTS submitted to European Commission 10 Jul 2026, pending Commission adoption",cpxOrga:2,cpxIT:1,link:"https://www.amla.europa.eu/policy/regulatory-instruments_en",isNew:false},
+  {id:13,topic:"AML/CFT",summary:"AMLA draft RTS on criteria for identifying business relationships, occasional transactions and linked transactions.",impact:"Affects transaction-monitoring calibration (aggregation rules) and occasional-client onboarding decision tree.",pubDate:"9 Feb 2026 (consultation)",issuer:"AMLA",status:"Level 2 pending",appDate:"Consultation closed 8 May 2026; final RTS submitted to European Commission 10 Jul 2026, pending Commission adoption",cpxOrga:3,cpxIT:3,link:"https://www.amla.europa.eu/policy/regulatory-instruments_en",isNew:false},
+  {id:14,topic:"AML/CFT",summary:"AMLA draft RTS under Art. 19(9) AMLR — methodology for collection and aggregation of risk indicators across the EU.",impact:"Data-availability project: ensure branch reporting to parent/CSSF supports AMLA indicator taxonomy.",pubDate:"9 Feb 2026 (consultation)",issuer:"AMLA",status:"Level 2 pending",appDate:"Final RTS submitted to European Commission 10 Jul 2026, pending Commission adoption",cpxOrga:2,cpxIT:2,link:"https://www.amla.europa.eu/document/download/ec0ece6c-f459-43ac-8a83-1a330412bb87_en",isNew:false},
+  {id:15,topic:"AML/CFT",summary:"AMLA Multi-Annual Work Programme 2026–2028 — supervisory methodology, selection procedure for direct supervision, stakeholder engagement, priorities on PEP & sanctions circumvention.",impact:"Strategic input for AML roadmap; align internal projects with AMLA priorities (PEP, sanctions, crypto).",pubDate:"Feb 2026",issuer:"AMLA",status:"Applicable / In force",appDate:"2026-2028",cpxOrga:1,cpxIT:1,link:"https://www.amla.europa.eu/amla-takes-major-step-toward-harmonised-eu-supervision_en",isNew:false},
+  {id:16,topic:"Tax / Reporting",summary:"DAC8 — Luxembourg Law of 27 March 2026 transposing Directive (EU) 2023/2226. Automatic exchange of information on crypto-assets, life-insurance income, cross-border tax rulings for individuals; CASP registration, due-diligence and reporting obligations.",impact:"Private banking: life-insurance reporting flow update; treasury/investment desk exposure to CASPs; first reporting by 30 Jun 2027 for CY 2026.",pubDate:"27 Mar 2026 (LU law)",issuer:"Ministry of Finance (LU)",status:"Applicable / In force",appDate:"1 Jan 2026 (reporting CY 2026; first exchange 30 Sep 2027)",cpxOrga:3,cpxIT:4,link:"https://www.grantthornton.lu/en/insights/luxembourg-draft-law-transposing-the-DAC-8-finally-voted-are-you-compliant/",isNew:false},
+  {id:17,topic:"Cyber & ICT Resilience",summary:"DORA (Reg (EU) 2022/2554) — applicable since 17 Jan 2025. Ongoing embedding of ICT risk management framework, incident reporting taxonomy, threat-led penetration testing (TLPT), register of information, oversight of critical TPPs.",impact:"Cross-cutting. Continue maturity uplift: RoI data quality, TLPT scoping every 3 years, updated ICT third-party contractual clauses, incident classification calibration.",pubDate:"27 Dec 2022 (OJ)",issuer:"EP & Council (co-legislators)",status:"Applicable / In force",appDate:"Applied 17 Jan 2025",cpxOrga:5,cpxIT:5,link:"https://eur-lex.europa.eu/eli/reg/2022/2554/oj",isNew:false},
+  {id:18,topic:"Cyber & ICT Resilience",summary:"Commission Delegated Regulation (EU) 2025/532 — RTS on subcontracting of ICT services supporting critical or important functions.",impact:"Update of ICT third-party policy: subcontracting chain due diligence, concentration risk limits, monitoring of subcontractor changes, contractual rights of objection & termination.",pubDate:"17 Apr 2025 (OJ)",issuer:"EU Commission",status:"Applicable / In force",appDate:"Applied on entry into force (May 2025)",cpxOrga:4,cpxIT:3,link:"https://eur-lex.europa.eu/eli/reg_del/2025/532/oj",isNew:false},
+  {id:19,topic:"Cyber & ICT Resilience",summary:"ITS establishing templates for the Register of Information under DORA — standardised RoI dataset to be reported annually to competent authorities.",impact:"Annual RoI submission to CSSF; IT mapping from GRC tool to ITS templates; data-quality monitoring.",pubDate:"Applicable",issuer:"EU Commission",status:"Applicable / In force",appDate:"Applied — first reporting May 2025; next cycle 2026",cpxOrga:4,cpxIT:4,link:"https://www.eba.europa.eu/activities/single-rulebook/regulatory-activities/operational-resilience/implementing-technical-standards-establish-templates-register-information",isNew:false},
+  {id:20,topic:"Cyber & ICT Resilience",summary:"CSSF Circular 25/882 — requirements on the use of ICT third-party services for DORA entities (LU specification of DORA TPP obligations).",impact:"Operational procedures for ICT TPP lifecycle; register maintenance; incident-reporting timing; pre-notification of material contracts to CSSF.",pubDate:"April 2025",issuer:"CSSF",status:"Applicable / In force",appDate:"Applied in 2025",cpxOrga:3,cpxIT:3,link:"https://www.cssf.lu/en/2025/04/updates-of-several-cssf-circulars-related-to-ict-risk-management-and-use-of-ict-third-parties-ict-outsourcing/",isNew:false},
+  {id:21,topic:"Cyber & ICT Resilience",summary:"CSSF Circular 25/880 — ICT risk management for non-DORA entities (scaled framework aligned with DORA principles).",impact:"Limited direct impact for bank branch (DORA in scope), but relevant for group entities (e.g., funds) and intra-group service providers.",pubDate:"April 2025",issuer:"CSSF",status:"Applicable / In force",appDate:"Applied in 2025",cpxOrga:2,cpxIT:2,link:"https://www.cssf.lu/en/ict-and-cyber-risk-for-non-dora-entities/",isNew:false},
+  {id:22,topic:"Outsourcing & Third-Party Risk",summary:"CSSF Circular 22/806 as amended by Circular 25/883 — outsourcing arrangements, restricted to business-process (non-ICT) outsourcing for DORA entities.",impact:"Clean-up of outsourcing inventory to split ICT (DORA regime) vs. non-ICT; re-assess intra-group service agreements; update pre-notification templates to CSSF.",pubDate:"April 2025 (25/883 amendment)",issuer:"CSSF",status:"Applicable / In force",appDate:"Applied in 2025",cpxOrga:3,cpxIT:2,link:"https://www.cssf.lu/wp-content/uploads/cssf22_806eng.pdf",isNew:false},
+  {id:23,topic:"Cyber & ICT Resilience",summary:"NIS2 Directive (Dir (EU) 2022/2555) — Luxembourg transposition law of 28 Oct 2024. Cyber-risk management & incident-reporting requirements for essential/important entities.",impact:"Most banking activities are already under DORA; check inclusion of ancillary branch functions (facility management, physical security, telecom) under NIS2.",pubDate:"28 Oct 2024 (LU law)",issuer:"Ministry of Finance (LU)",status:"Applicable / In force",appDate:"Applied — transposed Oct 2024",cpxOrga:3,cpxIT:3,link:"https://legilux.public.lu/eli/etat/leg/loi/2024/10/28/a501/jo",isNew:false},
+  {id:24,topic:"AI Governance",summary:"EU AI Act (Reg (EU) 2024/1689) — horizontal risk-based AI regulation. On 7 May 2026 the EP and Council reached provisional political agreement on the Digital Omnibus simplification: high-risk standalone systems (Annex III) now apply from 2 December 2027 and high-risk embedded systems (Annex I) from 2 August 2028; new prohibition on AI-generated non-consensual intimate content from 2 Dec 2026; transparency grace period for synthetic content reduced from 6 to 3 months. Formal Omnibus adoption expected before 2 August 2026.",impact:"High impact on mortgage underwriting: formal HRS management system, data governance, logging, human oversight, transparency, conformity assessment for any in-house or vendor credit-scoring model; update of model risk management policy; AI inventory & classification.",pubDate:"12 Jul 2024 (OJ)",issuer:"EP & Council (co-legislators)",status:"Partially applicable",appDate:"Phased: 2 Aug 2026 (most); 2 Dec 2027 high-risk standalone; 2 Aug 2028 high-risk embedded (per Digital Omnibus)",cpxOrga:5,cpxIT:5,link:"https://eur-lex.europa.eu/eli/reg/2024/1689/oj",isNew:false},
+  {id:25,topic:"AI Governance",summary:"EC Guidelines on high-risk AI classification (Art. 6 AI Act) — expected February 2026 target; practical examples of high-risk use cases, grey areas for credit institutions.",impact:"Reference doc for model-inventory triage (in-scope/out-of-scope) and for vendor due diligence on AI components.",pubDate:"Expected Q1/Q2 2026",issuer:"EU Commission",status:"Draft / Call for evidence",appDate:"Supports application by 2 Aug 2026",cpxOrga:2,cpxIT:2,link:"https://digital-strategy.ec.europa.eu/en/policies/regulatory-framework-ai",isNew:false},
+  {id:26,topic:"AI Governance",summary:"EBA letter on outcome of the AI Act mapping exercise against EU banking and payments regulation — no immediate new guidelines; EBA will support implementation in 2026-2027.",impact:"Lower near-term regulatory burden — but reinforces need to rely on existing EBA MRM/ICT guidelines to build AI governance.",pubDate:"Nov 2025",issuer:"EBA",status:"Applicable / In force",appDate:"Ongoing 2026-2027",cpxOrga:1,cpxIT:1,link:"https://finreg.aoshearman.com/eba-letter-on-outcome-of-ebas-eu-ai-act-mapping-exercise-against-eu-banking-and-payments-regulation",isNew:false},
+  {id:27,topic:"Payments",summary:"Payment Services Regulation (PSR) — directly applicable; framework for payment services, fraud liability, strong customer authentication, third-party providers. Council compromise texts published 23 April 2026; ECON committee approved the text on 5 May 2026 with plenary expected in the following weeks. OJ publication now anticipated for summer 2026 (possibly slipping into September); 18-month transition follows entry into force.",impact:"Very high impact on the payments stack: SCA rework, fraud reimbursement procedure, customer communication updates, TPP integration (rebuilt from PSD2 APIs), updated complaint handling.",pubDate:"27 Nov 2025 (political agreement)",issuer:"EP & Council (co-legislators)",status:"Political agreement (awaiting OJ)",appDate:"OJ summer/Sep 2026; 18m transition (≈Q1 2028). ECON confirmed (May 2026) it will recommend 2nd-reading adoption without amendment once Council transmits its position; Parliament targeting adoption by Sep 2026 at the latest",cpxOrga:5,cpxIT:4,link:"https://www.hoganlovells.com/en/publications/final-texts-for-psd3-and-psr-awaited-as-european-parliament-and-council-of-eu-announce-provisional",isNew:false},
+  {id:28,topic:"Payments",summary:"Payment Services Directive 3 (PSD3) — repeal/recast of PSD2 (licensing, supervision, agents, e-money). Council compromise texts published 23 April 2026 alongside PSR; ECON approved on 5 May 2026. OJ summer 2026; 18-month national transposition window follows. LU branch impact: relicensing of in-scope PIs/EMIs; alignment of agent/distributor regime; payments controls.",impact:"Relevant for group payments entities. Bank branch: monitor migration of any payments services from e-money/PI affiliates.",pubDate:"27 Nov 2025 (political agreement)",issuer:"EP & Council (co-legislators)",status:"Political agreement (awaiting OJ)",appDate:"OJ summer/Sep 2026; 18m transposition. ECON confirmed (May 2026) it will recommend 2nd-reading adoption without amendment once Council transmits its position; Parliament targeting adoption by Sep 2026 at the latest",cpxOrga:4,cpxIT:3,link:"https://www.nortonrosefulbright.com/en/knowledge/publications/cedd39c6/psd3-and-psr-from-provisional-agreement-to-2026-readiness",isNew:false},
+  {id:29,topic:"Payments",summary:"Instant Payments Regulation (Reg (EU) 2024/886) — Verification of Payee (VoP) mandatory for eurozone PSPs since 9 Oct 2025; 100% send/receive SCT Inst capability; harmonised sanctions-screening based on static-data approach.",impact:"Live compliance. Focus on VoP error-rate monitoring, handling of 'close match' UX, reimbursement rules for VoP-related fraud, daily sanctions data refresh.",pubDate:"19 Mar 2024 (OJ)",issuer:"EP & Council (co-legislators)",status:"Applicable / In force",appDate:"Phased — VoP live 9 Oct 2025; non-eurozone PSPs 9 Jul 2027",cpxOrga:4,cpxIT:5,link:"https://eur-lex.europa.eu/eli/reg/2024/886/oj",isNew:false},
+  {id:30,topic:"Payments",summary:"Financial Data Access Regulation (FiDA) — open-finance framework forcing data holders to share customer financial data with FISP-licensed third parties under consent. Trilogues continued through Q2 2026 with active debate on the gatekeeper exclusion (Commission non-paper backed by some MS for partial exclusion) and on a phased, staggered roll-out. Council interinstitutional file WK-5041/2026 issued 6 April 2026. Adoption expected H2 2026; Wave 1 (retail incl. mortgages) end-2027.",impact:"High IT/data impact: API surface beyond PSD2 payments scope (incl. mortgage data), scheme governance participation, FISP contracts, customer consent dashboards, costs allocation.",pubDate:"Trilogue ongoing (first trilogue Apr 2025)",issuer:"EP & Council (co-legislators)",status:"Trilogue / Political agreement pending",appDate:"Expected adoption late 2026; Wave 1 (retail incl. mortgages) end-2027",cpxOrga:5,cpxIT:5,link:"https://data.consilium.europa.eu/doc/document/WK-5041-2026-INIT/en/pdf",isNew:false},
+  {id:31,topic:"Payments",summary:"Digital Euro Regulation — legal basis for ECB to issue a digital euro as central bank money; distribution by supervised intermediaries, holding limits, offline feature, privacy safeguards.",impact:"Distribution-readiness: integration with ECB scheme, client authentication & on/off-boarding, liquidity management for holding limit enforcement, impact on deposit funding model.",pubDate:"Trilogue (EP vote targeted Jun 2026)",issuer:"EP & Council (co-legislators)",status:"Trilogue / Political agreement pending",appDate:"EP adopted negotiating mandate 9 Jul 2026 (416-169-22, plus separate mandate on non-eurozone PSPs); first EP-Council trilogue held 13 Jul 2026, aim to conclude by end-2026; ECB published draft rulebook v0.91 and named 36 pilot PSPs (incl. Deutsche Bank, UniCredit, Revolut, Adyen, Stripe) + 19 NCBs for a 12-month pilot from H2 2027; possible first issuance 2029",cpxOrga:4,cpxIT:5,link:"https://www.ecb.europa.eu/euro/digital_euro/progress/html/index.en.html",isNew:false},
+  {id:32,topic:"Payments",summary:"CSSF Circular 26/906 — Central administration, internal governance and risk management for payment institutions, e-money institutions and account information service providers.",impact:"Group payments entities in LU. Branch: limited direct impact but useful benchmark for governance expectations on shared services.",pubDate:"20 Jan 2026",issuer:"CSSF",status:"Applicable / In force",appDate:"Applied 20 Jan 2026",cpxOrga:3,cpxIT:2,link:"https://financialcrime.lu/2026/01/20/CSSF-Circular-26-906/",isNew:false},
+  {id:33,topic:"Payments",summary:"SEPA Scheme Rulebooks — EPC annual release (SCT Inst, SCT, SDD Core, SDD B2B) with VoP, ISO 20022 schema updates, new error codes.",impact:"Payments operations: annual testing cycle, schema migration, reject/return code mapping.",pubDate:"Annual releases 2025/2026",issuer:"EU Commission",status:"Applicable / In force",appDate:"Continuous",cpxOrga:3,cpxIT:4,link:"https://www.europeanpaymentscouncil.eu/",isNew:false},
+  {id:34,topic:"Prudential (CRR/CRD)",summary:"CRR3 (Reg (EU) 2024/1623) — Basel III finalisation: output floor, revised standardised approach for credit risk, FRTB market risk, CVA revision, SMA for operational risk.",impact:"RWA recalibration (residential mortgages loan-splitting treatment), output-floor binding for IRB banks, recalculation of capital ratios, ICAAP impact, new reporting templates.",pubDate:"19 Jun 2024 (OJ)",issuer:"EP & Council (co-legislators)",status:"Applicable / In force",appDate:"Applied 1 Jan 2025 (FRTB delayed to 2026)",cpxOrga:5,cpxIT:4,link:"https://eur-lex.europa.eu/eli/reg/2024/1623/oj",isNew:true},
+  {id:35,topic:"Prudential (CRR/CRD)",summary:"CRD VI (Dir (EU) 2024/1619) — governance & remuneration updates, ESG-risk integration in SREP, crypto-asset holding limits pending, fit & proper framework, updated supervisory powers, third-country branch (TCB) regime.",impact:"Governance: update of policies & procedures, board-level ESG-risk reporting, remuneration policy review, fit & proper re-runs.",pubDate:"19 Jun 2024 (OJ)",issuer:"EP & Council (co-legislators)",status:"Adopted (not yet applicable)",appDate:"11 Jan 2026 (general); 11 Jan 2027 (TCB)",cpxOrga:4,cpxIT:3,link:"https://eur-lex.europa.eu/eli/dir/2024/1619/oj",isNew:true},
+  {id:36,topic:"Prudential (CRR/CRD)",summary:"CRD VI Third-Country Branch (TCB) regime — mandatory branch authorisation for third-country credit institutions; Class 1 / Class 2 classification, capital endowment, limits on reverse solicitation.",impact:"Critical strategic item if the LU branch is of a non-EU parent: TCB Class 1 vs Class 2 assessment, endowment capital sizing, internal-governance mapping, book-of-business review.",pubDate:"19 Jun 2024 (OJ)",issuer:"EP & Council (co-legislators)",status:"Adopted (not yet applicable)",appDate:"11 Jan 2027",cpxOrga:5,cpxIT:4,link:"https://www.mourant.com/news-and-views/updates/updates-2025/crd-vi--consequences-on-non-eu-banking-institutions-lending-money-to-luxembourg-entities.aspx",isNew:true},
+  {id:37,topic:"Prudential (CRR/CRD)",summary:"Luxembourg Law of 5 May 2026 transposing Directive (EU) 2024/1619 (CRD VI) and Directive (EU) 2024/2994 — published in the Journal Officiel du Grand-Duché on 6 May 2026. Implements the revised CRD governance, remuneration, supervisory-powers and Third-Country Branch regime in LU law. CSSF Circular 12/552 will be updated to align with forthcoming EBA guidelines. The TCB provisions apply from 11 Jan 2027.",impact:"Monitor LU-specific options/derogations, timing of TCB submission, fit-and-proper evolution, remuneration specifics.",pubDate:"5 May 2026",issuer:"Ministry of Finance (LU)",status:"Applicable / In force",appDate:"General provisions in force May 2026; TCB regime 11 Jan 2027",cpxOrga:3,cpxIT:2,link:"https://www.cssf.lu/en/2026/05/publication-of-the-law-of-5-may-2026-transposing-directive-eu-2024-1619-crd-vi-and-directive-eu-2024-2994/",isNew:true},
+  {id:38,topic:"Prudential (CRR/CRD)",summary:"EBA Level-2 work-stream implementing CRD VI. Final products already published: Guidelines on instruments eligible for the TCB capital endowment requirement (3 March 2026); Guidelines on environmental scenario analysis under CRD VI; Guidelines on supervisory independence (29 April 2026); ITS on supervisory reporting of TCBs (first reference date 31 March 2027). Other RTS/Guidelines on TCB authorisation, fit & proper and internal governance still in consultation. EBA-ESMA joint consultation on revised suitability assessment closed 25 May 2026.",impact:"Impact on group and branch: update of remuneration committee charter, Material Risk Taker identification, ESG governance KPIs.",pubDate:"2025–2026 (staggered)",issuer:"EBA",status:"Partially applicable",appDate:"Phased through 2026-2027 alongside CRD VI",cpxOrga:2,cpxIT:2,link:"https://www.eba.europa.eu/regulation-and-policy",isNew:true},
+  {id:39,topic:"Prudential (CRR/CRD)",summary:"EBA 2026 Work Programme — priorities on Basel III finalisation L2 delivery, DORA oversight, ESG risk, AML coordination with AMLA, crypto-asset prudential treatment.",impact:"Strategic input — align compliance roadmap with EBA deliverables expected in 2026.",pubDate:"Oct 2025",issuer:"EBA",status:"Applicable / In force",appDate:"Throughout 2026",cpxOrga:1,cpxIT:1,link:"https://www.eba.europa.eu/publications-and-media/press-releases",isNew:true},
+  {id:40,topic:"Retail Credit / Mortgage",summary:"Consumer Credit Directive II (Dir (EU) 2023/2225 — 'CCD II') — scope extended to €100k, BNPL, leasing with option to purchase; revised creditworthiness assessment (data used, explainability), standardised APR, digital pre-contractual info (SECCI), 14-day withdrawal harmonisation.",impact:"Retail credit products (non-mortgage): SECCI redesign, APR re-computation, creditworthiness model update, IT changes for digital pre-contract disclosure; monitor LU transposition deadline missed and possible infringement.",pubDate:"30 Oct 2023 (OJ)",issuer:"EP & Council (co-legislators)",status:"Adopted (not yet applicable)",appDate:"20 Nov 2026 (application)",cpxOrga:3,cpxIT:3,link:"https://eur-lex.europa.eu/eli/dir/2023/2225/oj/eng",isNew:true},
+  {id:41,topic:"Retail Credit / Mortgage",summary:"Distance Marketing of Financial Services Directive (Dir (EU) 2023/2673 — 'DMD II') — consolidates distance-selling rules for financial services not covered by sector-specific texts; 14-day right of withdrawal harmonisation, new 'fairness' obligations, online interface design rules, human-contact button.",impact:"Update of online journeys for consumer credit, savings products, insurance-based investment products sold by the branch; UX redesign and disclosure timing changes.",pubDate:"28 Nov 2023 (OJ)",issuer:"EP & Council (co-legislators)",status:"Adopted (not yet applicable)",appDate:"19 Jun 2026 (application)",cpxOrga:2,cpxIT:2,link:"https://eur-lex.europa.eu/eli/dir/2023/2673/oj",isNew:true},
+  {id:42,topic:"Retail Credit / Mortgage",summary:"Mortgage Credit Directive (Dir 2014/17/EU) — under review by the Commission; expected legislative proposal in the 2024–2029 mandate covering mortgage switching, creditworthiness, forbearance, over-indebtedness, energy-efficient mortgages.",impact:"Strategic: monitor Commission timing; prepare gap analysis for mortgage book (switching friction, forbearance framework, green-mortgage products).",pubDate:"Evaluation 2025/2026",issuer:"EU Commission",status:"Draft / Call for evidence",appDate:"Proposal expected 2026/2027",cpxOrga:4,cpxIT:3,link:"https://finance.ec.europa.eu/consumer-finance-and-payments/retail-financial-services/credit/mortgage-credit_en",isNew:true},
+  {id:43,topic:"Retail Credit / Mortgage",summary:"EU Affordable Housing Plan — Commission priority for 2024-2029: mortgage access, sustainable housing finance, coordinated state aid framework, possible EU guarantee instruments.",impact:"Potential new mortgage products (green, first-time-buyer) requiring governance & disclosures updates; competitive monitoring.",pubDate:"2025-2026 (policy)",issuer:"EU Commission",status:"Draft / Call for evidence",appDate:"Proposals 2026+",cpxOrga:2,cpxIT:1,link:"https://commission.europa.eu/strategy-and-policy/priorities-2024-2029_en",isNew:true},
+  {id:44,topic:"Retail Credit / Mortgage",summary:"EBA Guidelines on loan origination & monitoring (EBA/GL/2020/06) — ongoing embedding; updates for ESG/green-mortgage elements and DORA alignment on model governance.",impact:"Credit risk: maintain gap assessment, update LTV/DTI/DSTI monitoring and ESG creditworthiness factors.",pubDate:"2020 (with updates)",issuer:"EBA",status:"Applicable / In force",appDate:"Continuous",cpxOrga:3,cpxIT:2,link:"https://www.eba.europa.eu/regulation-and-policy/credit-risk/guidelines-on-loan-origination-and-monitoring",isNew:true},
+  {id:45,topic:"ESG / Sustainability",summary:"CSRD / CSDDD Omnibus Simplification Directive — narrows CSRD reporting scope to EU entities >1,000 employees AND >€450m net turnover; listed SMEs fully exempted; delays & simplifies CSDDD; reduced ESRS data points (~320 vs ~1,073).",impact:"Branch-level: reassess whether it falls within scope via parent-group reporting; update double-materiality assessment; potentially downsize ESG data-collection infrastructure.",pubDate:"Council adopted 24 Feb 2026; in force 18 Mar 2026",issuer:"EP & Council (co-legislators)",status:"Applicable / In force",appDate:"12m transposition; FY 2027 first application",cpxOrga:3,cpxIT:2,link:"https://www.consilium.europa.eu/en/press/press-releases/2026/02/24/council-signs-off-simplification-of-sustainability-reporting-and-due-diligence-requirements-to-boost-eu-competitiveness/",isNew:true},
+  {id:46,topic:"ESG / Sustainability",summary:"Simplified ESRS Delegated Act — Commission to adopt within 6 months of Omnibus EIF. Reduces data points, simplifies double-materiality guidance, flexibility on undue-cost-or-effort.",impact:"Align ESG reporting infrastructure with simplified ESRS; re-scope data mapping; update disclosure controls.",pubDate:"Consultation expected Q2 2026",issuer:"EU Commission",status:"Draft / Call for evidence",appDate:"Adoption by Sep 2026 (6m from EIF)",cpxOrga:3,cpxIT:3,link:"https://finance.ec.europa.eu/sustainable-finance/",isNew:true},
+  {id:47,topic:"ESG / Sustainability",summary:"SFDR Review — Commission proposal Nov 2025: three new product categories replacing Art 8 / Art 9; simplified disclosures; revised PAI framework.",impact:"Investment products distribution: relabeling of model portfolios, marketing and KID revisions, training of relationship managers.",pubDate:"12 Nov 2025 (Commission proposal)",issuer:"EU Commission",status:"Draft / Call for evidence",appDate:"Likely late 2028 (with 18m implementation + start-up phase)",cpxOrga:4,cpxIT:3,link:"https://finance.ec.europa.eu/publications/commission-simplifies-transparency-rules-sustainable-financial-products_en",isNew:true},
+  {id:48,topic:"ESG / Sustainability",summary:"ESG Ratings Regulation (Reg (EU) 2024/3005) — authorisation & supervision of ESG rating providers by ESMA; transparency, methodology & conflict-of-interest rules.",impact:"Procurement of ESG ratings: ensure providers used are ESMA-authorised; update vendor due-diligence process; documentation of methodology reliance.",pubDate:"Nov 2024 (OJ)",issuer:"EP & Council (co-legislators)",status:"Adopted (not yet applicable)",appDate:"2 July 2026",cpxOrga:2,cpxIT:1,link:"https://eur-lex.europa.eu/eli/reg/2024/3005/oj",isNew:true},
+  {id:49,topic:"ESG / Sustainability",summary:"EU Green Bond Standard (Reg (EU) 2023/2631) — voluntary standard for 'European Green Bonds'; taxonomy alignment of use-of-proceeds; external reviewer regime.",impact:"Treasury & issuance: optional framework; impact on green bond portfolio analysis and client demand.",pubDate:"Dec 2023 (OJ)",issuer:"EP & Council (co-legislators)",status:"Applicable / In force",appDate:"Applied 21 Dec 2024",cpxOrga:2,cpxIT:1,link:"https://eur-lex.europa.eu/eli/reg/2023/2631/oj",isNew:true},
+  {id:50,topic:"ESG / Sustainability",summary:"EBA Guidelines on ESG risks management (EBA/GL/2025/01) — detailed expectations on identification, measurement, monitoring and management of ESG risks, including transition plans.",impact:"Credit risk: integrate climate & environmental factors in the LGD/PD models; update ICAAP/ILAAP ESG section; board-level transition plan.",pubDate:"Jan 2025",issuer:"EBA",status:"Applicable / In force",appDate:"Phased — first mandatory year 2026",cpxOrga:3,cpxIT:2,link:"https://www.eba.europa.eu/publications-and-media/press-releases/eba-publishes-its-final-guidelines-management-environmental-social-and-governance-risks",isNew:true},
+  {id:51,topic:"Post-trade / Market Infra",summary:"T+1 securities settlement transition in the EU — ESMA target date 11 October 2027; phased industry implementation 2026-2027; ESMA coordinating governance with EC and ECB.",impact:"Private banking operations: allocation/confirmation workflow acceleration, FX funding alignment, custody chain synchronisation, client communication, US/UK alignment already live.",pubDate:"Roadmap 2024-2025 (ESMA)",issuer:"ESMA",status:"Draft / Call for evidence",appDate:"Target 11 Oct 2027",cpxOrga:3,cpxIT:4,link:"https://www.esma.europa.eu/esmas-activities/markets-and-infrastructure/shortening-settlement-cycle-t1-eu",isNew:true},
+  {id:52,topic:"Post-trade / Market Infra",summary:"ESMA Final Report on amendments to the RTS on Settlement Discipline (ESMA74-2119945926-3430), submitted to the Commission on 13 October 2025. EC endorsement is expected in Q2 2026 with OJ publication targeted Q2/Q3 2026; phased application — shorter pre-settlement timeframes from 7 Dec 2026 and IT-development-dependent items from 11 Oct 2027 (T+1 go-live).",impact:"IT: upgrade SSI/allocation platforms, automate confirmations, connect to auto-partial & auto-collateralisation workflows.",pubDate:"2025-2026 consultation/RTS",issuer:"ESMA",status:"Level 2 pending",appDate:"EC endorsement Q2 2026; phased application 7 Dec 2026 → 11 Oct 2027",cpxOrga:2,cpxIT:3,link:"https://www.esma.europa.eu/press-news/esma-news/esma-proposes-key-reforms-settlement-discipline-supporting-transition-t1",isNew:true},
+  {id:53,topic:"Post-trade / Market Infra",summary:"EMIR 3 Active Account Requirement (AAR) — RTS applicable 26 Feb 2026: conditions for meeting the AAR at an EU CCP for OTC IRD (EUR, PLN) and STIR (EUR); 5 trades/5 subcategories representativeness test.",impact:"Clearing members / treasury: ensure active account opened & operational at an EU CCP; contractual & IT connectivity; representativeness monitoring.",pubDate:"26 Feb 2026 (RTS in force)",issuer:"ESMA",status:"Applicable / In force",appDate:"Applied 26 Feb 2026",cpxOrga:3,cpxIT:2,link:"https://www.esma.europa.eu/press-news/esma-news/esma-publishes-final-report-active-account-requirement-under-emir-3",isNew:true},
+  {id:54,topic:"Post-trade / Market Infra",summary:"EMIR 3 — first AAR reporting to CSSF/ESMA: templates & instructions; first submission 31 Jul 2026 covering 25 Jun 2025 – 30 Jun 2026; then 6-month cycle (31 Jan / 31 Jul).",impact:"Ops & reporting: data sourcing, template population, controls; initial dual-running with regulatory sandbox.",pubDate:"First reporting due 31 Jul 2026",issuer:"ESMA",status:"Applicable / In force",appDate:"31 Jul 2026 onwards",cpxOrga:2,cpxIT:2,link:"https://finreg.aoshearman.com/esma-statement-on-upcoming-reporting-obligations-under-emir-3",isNew:true},
+  {id:55,topic:"Post-trade / Market Infra",summary:"CSDR Refit (Reg (EU) 2023/2845) — mandatory buy-ins suspended, revised cash-penalty regime, third-country settlement internaliser reporting, enhanced passporting.",impact:"Settlement: maintain penalty monitoring & client billing framework; internal control reassessment for internalisers.",pubDate:"Dec 2023 (OJ)",issuer:"EP & Council (co-legislators)",status:"Applicable / In force",appDate:"Phased through 2024-2025",cpxOrga:2,cpxIT:2,link:"https://eur-lex.europa.eu/eli/reg/2023/2845/oj",isNew:true},
+  {id:56,topic:"Benchmarks",summary:"EU Benchmarks Regulation Review (Reg (EU) 2025/914) — amendments apply from 1 Jan 2026: scope narrowed to critical & significant EU benchmarks, EU PAB/CTB climate benchmarks; ESMA becomes single entry point for third-country benchmarks.",impact:"Review of benchmark inventory used in products/loans; for index providers reliance on EU administrators; update BCP/fallback clauses.",pubDate:"19 May 2025 (OJ); in force 8 Jun 2025",issuer:"EP & Council (co-legislators)",status:"Applicable / In force",appDate:"Applied 1 Jan 2026",cpxOrga:2,cpxIT:2,link:"https://eur-lex.europa.eu/eli/reg/2025/914/oj",isNew:true},
+  {id:57,topic:"Crypto / MiCA",summary:"MiCA transitional regime — grandfathering of CASPs that were providing services legally before 30 Dec 2024 ends on 1 July 2026 (LU applied the 18-month transitional). Requires full CSSF authorisation.",impact:"Only relevant if branch (or group) provides crypto services; align treasury / investment desk contracts with authorised CASPs post-grandfathering.",pubDate:"Applicable",issuer:"CSSF",status:"Applicable / In force",appDate:"Grandfathering/transitional period ended 1 Jul 2026 (confirmed by ESMA public statement of 23 Jun 2026); unauthorised CASPs must now cease EU activity",cpxOrga:3,cpxIT:2,link:"https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica",isNew:true},
+  {id:58,topic:"Crypto / MiCA",summary:"MiCA Level 2 package — 30+ RTS/ITS & Guidelines (whitepaper templates, reserve requirements for ARTs/EMTs, market abuse, suitability for advisers).",impact:"Relevant for any client offering of crypto-derivatives or direct crypto custody; compliance framework rebuild if service offered.",pubDate:"Throughout 2024-2025",issuer:"ESMA",status:"Applicable / In force",appDate:"Applied",cpxOrga:2,cpxIT:2,link:"https://www.lw.com/en/markets-in-crypto-assets-regulation-tracker/mica-all-texts",isNew:true},
+  {id:59,topic:"MiFID / Investment Services",summary:"Savings and Investments Union (SIU) Strategy — Commission March 2025 strategy to channel retail savings into EU capital markets; Savings & Investment Accounts recommendation, securitisation revitalisation, supervisory convergence.",impact:"Strategic monitoring; potential new client product (SIA) distribution; impact on supervisory model (ESMA-level convergence).",pubDate:"Mar 2025 (strategy) / Dec 2025 (securitisation package)",issuer:"EU Commission",status:"Partially applicable",appDate:"Legislative measures 2026-2027",cpxOrga:3,cpxIT:2,link:"https://finance.ec.europa.eu/regulation-and-supervision/savings-and-investments-union_en",isNew:true},
+  {id:60,topic:"MiFID / Investment Services",summary:"EU Securitisation Reform Package — amendments to the Securitisation Regulation, CRR and Solvency II. European Parliament adopted its negotiating position in plenary on 5 May 2026 (greater proportionality in due diligence, simplified DD for repeat transactions, removal of EU-template requirement for third-country issuers). Trilogues expected H2 2026; reforms unlikely to take effect before mid-2027. Relevance to LU PB: discretionary mandates and Lombard / collateral books that hold securitisation positions.",impact:"Treasury & capital markets: recalibrate securitisation investment & issuance appetite, STS checks.",pubDate:"Dec 2025 (Council position)",issuer:"EU Commission",status:"Trilogue / Political agreement pending",appDate:"Trilogues H2 2026; application ~mid-2027",cpxOrga:3,cpxIT:3,link:"https://www.consilium.europa.eu/en/policies/savings-and-investments-union-siu/",isNew:true},
+  {id:61,topic:"MiFID / Investment Services",summary:"Commission Recommendation on Savings and Investment Accounts (SIA) — standardised retail vehicle providing access to EU capital markets, tax-efficient where Member States opt-in.",impact:"Potential product launch if LU introduces SIA regime; distribution, advice & reporting setup.",pubDate:"2025/2026",issuer:"EU Commission",status:"Draft / Call for evidence",appDate:"Dependent on LU implementation",cpxOrga:2,cpxIT:1,link:"https://finance.ec.europa.eu/regulation-and-supervision/savings-and-investments-union_en",isNew:true},
+  {id:62,topic:"Governance & Conduct",summary:"ESMA 2026 Annual Work Programme — thematic priorities: MiFID investor protection under RIS transition, digital finance, SIU, sustainability-related disclosures, supervisory convergence, data.",impact:"Strategic input — reference for anticipated ESMA consultations and CSSF thematic reviews.",pubDate:"Oct 2025",issuer:"ESMA",status:"Applicable / In force",appDate:"Throughout 2026",cpxOrga:1,cpxIT:1,link:"https://www.esma.europa.eu/sites/default/files/2025-10/ESMA22-50751485-1604_Annual_Work_Programme_2026.pdf",isNew:true},
+  {id:63,topic:"Governance & Conduct",summary:"CSSF thematic reviews 2026 — governance & conduct priorities announced: suitability & appropriateness under MiFID, AML onboarding remote channels, ICT third-party resilience under DORA.",impact:"Prepare self-assessments on targeted topics; possible onsite/off-site inspection requests.",pubDate:"2026",issuer:"CSSF",status:"Applicable / In force",appDate:"Throughout 2026",cpxOrga:2,cpxIT:1,link:"https://www.cssf.lu/en/",isNew:true},
+  {id:64,topic:"Consumer Protection",summary:"EU Retail Payments Strategy / Anti-fraud measures integrated into PSR — APP fraud liability reallocation, spoof-scam safeguards, harmonised IBAN/name checking beyond VoP, MNO/telecom cooperation.",impact:"Payments fraud framework rewrite, claims management process, customer education, joint bank-telecom protocols.",pubDate:"Integrated in PSR (political agreement Nov 2025)",issuer:"EU Commission",status:"Political agreement (awaiting OJ)",appDate:"Aligned with PSR entry into force",cpxOrga:3,cpxIT:3,link:"https://www.consilium.europa.eu/en/policies/payments-in-the-eu/",isNew:true},
+  {id:65,topic:"AML/CFT",summary:"EU Sanctions framework — periodic Council regulations implementing sanctions against Russia/Belarus and other jurisdictions; updates to restrictive measures, new SDN listings.",impact:"Continuous compliance: screening tool updates, customer re-screening, cross-border transaction blocks, reporting to CSSF/Ministry of Finance.",pubDate:"Ongoing 2025-2026 packages",issuer:"EU Council",status:"Applicable / In force",appDate:"Continuous",cpxOrga:3,cpxIT:3,link:"https://www.consilium.europa.eu/en/policies/sanctions/",isNew:true},
+  {id:66,topic:"Governance & Conduct",summary:"Luxembourg Bill of Law transposing AMLD6 and applying AMLR adjustments — amendments to Law of 12 Nov 2004 and Law of 5 Apr 1993 (LSF).",impact:"Align internal AML framework with LU-level options chosen in transposition (e.g., thresholds, supervisory cooperation).",pubDate:"Filing expected 2026",issuer:"Ministry of Finance (LU)",status:"Draft / Call for evidence",appDate:"Targeted for 10 Jul 2027",cpxOrga:4,cpxIT:3,link:"https://mfin.gouvernement.lu/en.html",isNew:true},
+  {id:67,topic:"Governance & Conduct",summary:"Luxembourg Budget Law 2026 — financial-sector tax provisions, subscription tax adjustments, CIT/NWT updates, tax measures for first-time mortgage buyers, savings incentives.",impact:"Tax & product teams: revise private-banking product illustrations (post-tax returns), mortgage product pricing and promotional offers.",pubDate:"Dec 2025 (adopted)",issuer:"Ministry of Finance (LU)",status:"Applicable / In force",appDate:"1 Jan 2026",cpxOrga:2,cpxIT:1,link:"https://budget.public.lu/lb.html",isNew:true},
+  {id:68,topic:"Prudential (CRR/CRD)",summary:"Macroprudential measures (CSSF Regulation / CdRS) — review of borrower-based measures (LTV, DSTI, maturity caps) on Luxembourg residential mortgages; countercyclical capital buffer rate setting.",impact:"Mortgage book: monitor LTV/DSTI ceilings and underwriting exceptions; adjust pricing & internal risk limits.",pubDate:"CSSF reviews semi-annual",issuer:"CSSF",status:"Applicable / In force",appDate:"Ongoing",cpxOrga:3,cpxIT:2,link:"https://www.cssf.lu/en/macroprudential-measures/",isNew:true},
+  {id:69,topic:"AI Governance",summary:"Digital Omnibus political agreement reached on 7 May 2026 between EP and Council amending key parts of the EU AI Act: high-risk timelines extended (Annex III: 2 Dec 2027; Annex I embedded: 2 Aug 2028), new prohibition on AI-generated non-consensual intimate content (apply 2 Dec 2026), SME/SMC scope relief, and shorter (3-month) grace period to apply transparency labelling on synthetic content. Formal adoption is sought before the original 2 Aug 2026 high-risk go-live to avoid a cliff edge. UPDATE 23 Jun 2026: European Parliament gave final plenary approval to the agreed text on 16 June 2026 (423 votes in favour); Council formal adoption expected 29 June 2026, signature around 8 July 2026, with Official Journal publication anticipated 18-25 July 2026, ahead of the 2 August 2026 deadline for the original high-risk AI Act timelines this Omnibus is designed to supersede.",impact:"More breathing room for the branch's AI-assisted KYC, suitability, fraud-scoring and chatbot tooling, but synthetic-content transparency obligations bite earlier. Reopens internal AI risk taxonomy: identify any deepfake-adjacent uses, refresh data protection impact assessments and update the AI register.",pubDate:"7 May 2026",issuer:"EP & Council (co-legislators)",status:"Political agreement (awaiting OJ)",appDate:"Council adoption ~29 Jun 2026; signature ~8 Jul 2026; OJ ~18-25 Jul 2026. Phased application: synthetic-content labelling 2 Dec 2026; standalone high-risk 2 Dec 2027; embedded high-risk 2 Aug 2028",cpxOrga:3,cpxIT:2,link:"https://www.consilium.europa.eu/en/press/press-releases/2026/05/07/artificial-intelligence-council-and-parliament-agree-to-simplify-and-streamline-rules/",isNew:true},
+  {id:70,topic:"Governance & Conduct",summary:"EBA-ESMA joint consultation on revised Guidelines on the assessment of the suitability of members of the management body and key function holders, plus a parallel EBA consultation on draft RTS specifying the documentation large institutions must submit to competent authorities. Consultation closed 25 May 2026. Reflects new CRD requirements for large institutions and tightens fit-and-proper expectations on collective suitability, conflict-of-interest management and key function holders.",impact:"LU branch executive committee and material risk takers re-assessment; updated templates and evidence packs for CSSF / ECB notifications; refresh of suitability policy and onboarding workflow for new senior hires.",pubDate:"March 2026 (consultation closed 25 May 2026)",issuer:"EBA",status:"Public consultation",appDate:"Final guidelines expected H2 2026; alignment with CRD VI application",cpxOrga:3,cpxIT:1,link:"https://www.eba.europa.eu/publications-and-media/press-releases/eba-and-esma-launch-consultation-revised-suitability-assessment-framework-banks-and-investment-firms",isNew:true},
+  {id:71,topic:"Prudential (CRR/CRD)",summary:"EBA Discussion Paper on simplification and assessment of the credit risk framework. Consultation closed 10 May 2026. Probes options to streamline the IRB approval and model-change perimeter, reduce documentation burden for standardised exposures, and rationalise overlap between credit-risk and ESG-related reporting. Likely input to the 2026-2028 single-rulebook simplification agenda.",impact:"Modest near-term impact but signals direction of travel: branch should map current credit-risk reporting effort against potential 2027-2028 simplification to identify decommissioning candidates. Mortgage book treatment likely unchanged short-term.",pubDate:"March 2026 (consultation closed 10 May 2026)",issuer:"EBA",status:"Public consultation",appDate:"Policy response expected 2027",cpxOrga:2,cpxIT:1,link:"https://www.eba.europa.eu/publications-and-media/press-releases/eba-launches-consultation-simplifying-credit-risk-framework",isNew:true},
+  {id:72,topic:"ESG / Sustainability",summary:"EBA consultation on simplifications to the ESG reporting requirements under Pillar 3 of the CRR. Replaces the ad-hoc reporting for large EU banks with a tiered framework that covers all CRR institutions through three template sets, calibrated by size, complexity and listing status. Comments requested by 10 July 2026. Aligned with the EU competitiveness / simplification omnibus agenda.",impact:"For a LU branch, expect lighter ESG Pillar 3 templates than the current EBA ITS regime, but with broader applicability. Refresh ESG data-quality remediation plan and align with the CSRD-Omnibus simplification timeline. Likely net reduction in reporting cost over time.",pubDate:"May 2026 (consultation open until 10 July 2026)",issuer:"EBA",status:"Public consultation",appDate:"Final draft RTS Q4 2026; application 2027",cpxOrga:2,cpxIT:2,link:"https://www.eba.europa.eu/publications-and-media/consultations",isNew:true},
+  {id:73,topic:"Governance & Conduct",summary:"ESMA Final Report on the 2025 Common Supervisory Action (CSA) on compliance and internal audit functions of fund managers, published 11 May 2026. Most managers comply with key requirements but the review flags governance weaknesses on the independence of control functions, the quality and embedding of internal policies, and senior-management / board oversight. NCAs (incl. CSSF) will use this in 2026-27 supervisory work and thematic reviews of AIFM/UCITS ManCos.",impact:"Direct read-across for the branch's discretionary-mandate and asset-management platform: tighten independence of second-line compliance, strengthen internal-audit coverage of investment processes, refresh Board / ExCo reporting on compliance findings, and prepare for CSSF follow-up review questionnaires.",pubDate:"11 May 2026",issuer:"ESMA",status:"Applicable / In force",appDate:"Supervisory follow-up 2026-2027",cpxOrga:3,cpxIT:1,link:"https://www.esma.europa.eu/press-news/esma-news/esma-publishes-its-2025-common-supervisory-action-csa-compliance-and-internal",isNew:true},
+  {id:74,topic:"Tax / Reporting",summary:"ESMA Final Report on the integrated collection of funds' data, submitted to the Commission under Art. 69a(2) AIFMD and Art. 20b UCITS Directive (May 2026). Proposes an integrated supervisory reporting system reducing duplication between AIFMD/UCITS, MiFIR transaction, EMIR, SFTR and SFDR reporting, with stronger data standardisation and reuse across NCAs and ESAs. Will inform a Commission proposal later in 2026.",impact:"Medium-term opportunity to retire duplicate reporting plumbing across PB and asset-management platforms. No immediate action, but engage IT and operations now to map current report inventory against the proposed integrated taxonomy.",pubDate:"May 2026",issuer:"ESMA",status:"Level 2 pending",appDate:"Commission proposal expected late 2026; phased implementation 2028+",cpxOrga:2,cpxIT:3,link:"https://www.regulationtomorrow.com/2026/05/esma-reports-on-the-simplification-of-eu-reporting-frameworks-for-funds-and-transactions/",isNew:true},
+  {id:75,topic:"Governance & Conduct",summary:"CSSF Circular 26/912 — published 22 May 2026 — repeals the long-standing Circular IML 91/75 on UCIs governed by the Law of 30 March 1988 and re-codifies several chapters into the modernised framework following Circular CSSF 25/901. Largely tidy-up of UCIs that pre-date the 2010 UCI Law; relevant for the branch only to the extent it acts as distributor or sub-custodian for legacy 1988-law vehicles.",impact:"Low direct impact for a private-banking + mortgage branch. Check product inventory for any legacy 1988-law UCIs distributed to clients; if so, update disclosures and selection-and-monitoring documentation accordingly.",pubDate:"22 May 2026",issuer:"CSSF",status:"Applicable / In force",appDate:"Applies from publication (22 May 2026)",cpxOrga:1,cpxIT:1,link:"https://www.cssf.lu/en/2026/05/repeal-of-circular-iml-91-75/",isNew:true},
+  {id:76,topic:"AML/CFT",summary:"AMLA launched a public consultation on draft Guidelines on the ongoing monitoring of a business relationship, developed under Article 26(5) of the AML Regulation (Reg (EU) 2024/1624). The guidelines set minimum expectations for ongoing customer due diligence and transaction monitoring by obliged entities. Consultation closes 3 September 2026; final guidelines expected Q4 2026.",impact:"Direct impact on the branch's KYC refresh cycles and transaction-monitoring framework for private-banking clients: ongoing-monitoring triggers, periodic review frequency by risk tier, and calibration of transaction-monitoring scenarios will need alignment ahead of AMLR application (10 July 2027). IT impact on monitoring tooling and case management.",pubDate:"3 June 2026 (consultation)",issuer:"AMLA",status:"Public consultation",appDate:"Final guidelines Q4 2026; AMLR application 10 July 2027",cpxOrga:3,cpxIT:3,link:"https://www.amla.europa.eu/policy/public-consultations_en",isNew:true},
+  {id:77,topic:"AML/CFT",summary:"AMLA consulted on draft Guidelines on group-wide AML/CFT requirements and on the business-wide risk assessment (under AMLR Articles 10 and 16/17), with public hearings held on 20 and 28 May 2026. The instruments set minimum expectations for group-wide policies, procedures and controls and for the methodology of the institution-wide risk assessment, applying proportionality by size and risk profile.",impact:"Affects the branch's AML risk-assessment methodology and its integration into group-wide policies and controls (head-office coordination, intra-group information sharing). The branch will need to refresh its business-wide risk assessment template and governance ahead of AMLR application; moderate IT impact on risk-scoring and documentation.",pubDate:"May 2026 (consultation)",issuer:"AMLA",status:"Public consultation",appDate:"Final guidelines expected 2026/2027; AMLR application 10 July 2027",cpxOrga:3,cpxIT:2,link:"https://www.amla.europa.eu/amla-consults-group-wide-requirements-and-business-wide-risk-assessment_en",isNew:true},
+  {id:78,topic:"Crypto / MiCA",summary:"EBA published a consultation paper (EBA/CP/2026/10, 26 June 2026) setting out a draft methodology for calculating pecuniary sanctions on issuers of \"significant\" asset-referenced tokens (ARTs) and e-money tokens (EMTs) under MiCA, using a two-step approach (baseline severity classification, then aggravating/mitigating adjustment). Proposed fines run up to 12.5% of annual turnover for significant ART issuers and up to 10% for significant EMT issuers, or twice the illicit profit gained. A virtual public hearing was held 16 July 2026; comments are due 28 September 2026.",impact:"Defines the downside exposure once a token crosses MiCA's significance thresholds (10m holders / EUR5bn market cap / 2.5m daily transactions) — relevant context for the stablecoin shock-trigger watch even though no token has yet been designated significant. A payments/digital-assets practitioner should track this as the enforcement backbone of the significant-issuer regime and reassess exposure if the branch's platform intermediates ART/EMT products.",pubDate:"26 June 2026",issuer:"EBA",status:"Public consultation",appDate:"Final methodology expected Q4 2026/early 2027",cpxOrga:2,cpxIT:1,link:"https://www.eba.europa.eu/publications-and-media/press-releases/european-banking-authority-consults-draft-methodology-setting-fines-under-markets-crypto-assets",isNew:true},
+  {id:79,topic:"AML/CFT",summary:"AMLA and the European Data Protection Board announced (1 July 2026) that they will jointly develop Guidelines on Partnerships for Information Sharing under Article 75 of the AML Regulation, clarifying how obliged entities and public authorities can share AML/CFT-relevant information while remaining compliant with the GDPR. A stakeholder event to gather early views is planned later in 2026, with a public consultation on the draft guidelines expected in H1 2027; the underlying information-sharing gateway itself applies from 10 July 2027.",impact:"Early signal for how the branch's future information-sharing partnerships (e.g. financial-crime intelligence sharing with peer institutions) will need to be structured to satisfy both AMLR and GDPR simultaneously; no immediate action required, but worth flagging to data-protection and financial-crime teams ahead of the 2027 consultation.",pubDate:"1 July 2026",issuer:"AMLA",status:"Draft / Call for evidence",appDate:"Draft guidelines consultation expected H1 2027; information-sharing gateway applies 10 Jul 2027",cpxOrga:2,cpxIT:1,link:"https://www.amla.europa.eu/press-release-amla-and-edpb-develop-joint-guidelines-partnerships-information-sharing_en",isNew:true},
+  {id:80,topic:"AML/CFT",summary:"AMLA launched a public consultation (13 July 2026) on draft Regulatory Technical Standards establishing a harmonised methodology for assessing the inherent and residual money-laundering/terrorist-financing risk profile of obliged entities in the non-financial sector. A public hearing is scheduled for 10 September 2026 and the consultation closes 27 September 2026; the methodology is scheduled to apply from 31 December 2028.",impact:"Targets non-financial obliged entities (e.g. real estate, high-value goods dealers) rather than banks directly, so limited direct relevance to a payments/private-banking branch; monitor only, as the methodology may still shape AMLA's broader risk-assessment approach applied by analogy to financial-sector supervision.",pubDate:"13 July 2026 (consultation open until 27 Sep 2026)",issuer:"AMLA",status:"Public consultation",appDate:"Methodology scheduled to apply from 31 Dec 2028",cpxOrga:1,cpxIT:1,link:"https://www.amla.europa.eu/policy/public-consultations/consultation-draft-rts-assessment-inherent-and-residual-risk-profile-obliged-entities-non-financial_en",isNew:true},
+  {id:81,topic:"AML/CFT",summary:"AMLA finalised standards (21 July 2026) governing its cooperation with national financial supervisors for the selection and direct supervision of the most significant cross-border financial institutions in the EU. The standards cover selection criteria, the handoff of supervisory responsibility between national and EU level, and joint working arrangements ahead of AMLA assuming direct supervision of selected institutions from 2028.",impact:"Sets the operating model for how a cross-border branch could transition from CSSF-led to AMLA-led (or joint) AML/CFT supervision if selected as a directly-supervised entity from 2028; governance and liaison arrangements with Group compliance should be reviewed against the new cooperation standards ahead of the 2027 selection round.",pubDate:"21 July 2026",issuer:"AMLA",status:"Applicable / In force",appDate:"Direct supervision of selected entities begins 2028",cpxOrga:3,cpxIT:1,link:"https://www.amla.europa.eu/amla-takes-next-step-toward-2027-selection-entities-direct-supervision_en",isNew:true},
+];
+
+// ══════════════════════════════════════════════════════
+//  COUNTDOWN OPTIONS (keyed by itemId so they follow data updates)
+// ══════════════════════════════════════════════════════
+const COUNTDOWN_OPTIONS = [
+  {key:"listing-act",   label:"Listing Act Prospectus Regulation",     date:"2026-06-05", itemId:5},
+  {key:"dmd2",          label:"DMD II Application",                     date:"2026-06-19", itemId:41},
+  {key:"mica",          label:"MiCA Grandfathering End",                date:"2026-07-01", itemId:57},
+  {key:"esg-ratings",  label:"ESG Ratings Regulation",                 date:"2026-07-02", itemId:48},
+  {key:"emir3-report", label:"EMIR 3 First AAR Reporting",             date:"2026-07-31", itemId:54},
+  {key:"ai-act",       label:"EU AI Act Full Application",              date:"2026-08-02", itemId:24},
+  {key:"esrs",         label:"Simplified ESRS Adoption",                date:"2026-09-01", itemId:46},
+  {key:"ccd2",         label:"Consumer Credit Directive II",            date:"2026-11-20", itemId:40},
+  {key:"crd6-tcb",     label:"CRD VI Third-Country Branch",             date:"2027-01-11", itemId:36},
+  {key:"amlr",         label:"AMLR Application",                       date:"2027-07-10", itemId:8},
+  {key:"t1",           label:"T+1 Settlement EU Go-Live",              date:"2027-10-11", itemId:51},
+  {key:"fida",         label:"FiDA Wave 1 (Mortgages/Retail)",         date:"2027-12-31", itemId:30},
+  {key:"ris",          label:"RIS / MiFID Reform (approx.)",           date:"2028-06-01", itemId:1},
+  {key:"psr",          label:"Payment Services Regulation (approx.)",  date:"2028-01-01", itemId:27},
+];
+
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let selectedCountdowns = ["mica","ai-act","amlr","crd6-tcb","t1"];
+let tempSelected = [];
+let activeFilterKey = null;
+let activeFilterVal = null;
+let showNewOnly = false;
+let currentPage = 1;
+const PAGE_SIZE = 20;
+
+// ══════════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════════
+const STATUS_CLASS = {
+  "Applicable / In force":                   "b-green",
+  "Adopted (not yet applicable)":            "b-blue",
+  "Political agreement (awaiting OJ)":       "b-amber",
+  "Trilogue / Political agreement pending":  "b-orange",
+  "Public consultation":                     "b-blue2",
+  "Draft / Call for evidence":               "b-gray",
+  "Partially applicable":                    "b-teal",
+  "Level 2 pending":                         "b-purple",
+};
+
+function statusBadge(s){
+  return `<span class="badge ${STATUS_CLASS[s]||'b-gray'}">${escHtml(s)}</span>`;
+}
+
+function escHtml(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function cpxColor(n){
+  return ["","#166534","#059669","#d97706","#ea580c","#dc2626"][n]||"#6b7280";
+}
+
+function daysUntil(dateStr){
+  return Math.ceil((new Date(dateStr+"T00:00:00")-new Date())/(1000*60*60*24));
+}
+
+function formatDate(dateStr){
+  return new Date(dateStr+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+}
+
+function domainShort(url){
+  try{return new URL(url).hostname.replace("www.","");}catch{return url;}
+}
+
+function avg(arr,fn){
+  if(!arr.length) return "—";
+  return (arr.reduce((s,i)=>s+(fn(i)||0),0)/arr.length).toFixed(2);
+}
+
+// ══════════════════════════════════════════════════════
+//  DASHBOARD — fully dynamic
+// ══════════════════════════════════════════════════════
+function renderDashboard(){
+  const total = ITEMS.length;
+  const avgOrga = avg(ITEMS, i=>i.cpxOrga);
+  const avgIT   = avg(ITEMS, i=>i.cpxIT);
+
+  // aggregations
+  const byStatus={}, byTopic={}, byIssuer={};
+  ITEMS.forEach(item=>{
+    // status
+    if(!byStatus[item.status]) byStatus[item.status]={count:0,sumOrga:0};
+    byStatus[item.status].count++;
+    byStatus[item.status].sumOrga+=item.cpxOrga;
+    // topic
+    if(!byTopic[item.topic]) byTopic[item.topic]={count:0,sumOrga:0};
+    byTopic[item.topic].count++;
+    byTopic[item.topic].sumOrga+=item.cpxOrga;
+    // issuer
+    if(!byIssuer[item.issuer]) byIssuer[item.issuer]={count:0,sumIT:0};
+    byIssuer[item.issuer].count++;
+    byIssuer[item.issuer].sumIT+=item.cpxIT;
+  });
+
+  // stats row
+  document.getElementById("dash-stats").innerHTML=`
+    <div class="stat-card">
+      <div class="s-label">Total Items Tracked</div>
+      <div class="s-value">${total}</div>
+      <div class="s-sub">Private banking &amp; mortgage scope</div>
+    </div>
+    <div class="stat-card" style="border-left-color:var(--orange)">
+      <div class="s-label">Avg Complexity — Organisation</div>
+      <div class="s-value" style="color:var(--orange)">${avgOrga}</div>
+      <div class="s-sub">Scale 1 (minimal) → 5 (strategic overhaul)</div>
+    </div>
+    <div class="stat-card" style="border-left-color:var(--teal)">
+      <div class="s-label">Avg Complexity — IT</div>
+      <div class="s-value" style="color:var(--teal)">${avgIT}</div>
+      <div class="s-sub">Scale 1 (monitoring) → 5 (full rebuild)</div>
+    </div>`;
+
+  // status table (ordered by count desc)
+  const statusOrder=[
+    "Applicable / In force","Adopted (not yet applicable)","Draft / Call for evidence",
+    "Political agreement (awaiting OJ)","Public consultation","Partially applicable",
+    "Trilogue / Political agreement pending","Level 2 pending"
+  ];
+  // Dot colours matching the badge palette
+  const STATUS_DOT={
+    "Applicable / In force":                  "#059669",
+    "Adopted (not yet applicable)":           "#2563eb",
+    "Political agreement (awaiting OJ)":      "#d97706",
+    "Trilogue / Political agreement pending": "#ea580c",
+    "Public consultation":                    "#0284c7",
+    "Draft / Call for evidence":              "#6b7280",
+    "Partially applicable":                   "#0d9488",
+    "Level 2 pending":                        "#7c3aed",
+  };
+
+  const statusRows = statusOrder.filter(s=>byStatus[s]).map(s=>{
+    const {count,sumOrga}=byStatus[s];
+    const a=(sumOrga/count).toFixed(2);
+    const dot=STATUS_DOT[s]||"#6b7280";
+    return `<div class="drow" data-field="status" data-val="${escHtml(s)}" title="Show all: ${escHtml(s)}">
+      <span class="drow-dot" style="background:${dot}"></span>
+      <span class="dr-status-name">${escHtml(s)}</span>
+      <span class="dr-count">${count}</span><span class="dr-avg">${a}</span><span class="drow-arrow">→</span></div>`;
+  }).join("");
+
+  const topicRows = Object.entries(byTopic).sort((a,b)=>b[1].count-a[1].count).map(([t,{count,sumOrga}])=>{
+    const a=(sumOrga/count).toFixed(2);
+    return `<div class="drow" data-field="topic" data-val="${escHtml(t)}" title="Show all: ${escHtml(t)}">
+      <span class="dr-name">${escHtml(t)}</span>
+      <span class="dr-count">${count}</span><span class="dr-avg">${a}</span><span class="drow-arrow">→</span></div>`;
+  }).join("");
+
+  const issuerRows = Object.entries(byIssuer).sort((a,b)=>b[1].count-a[1].count).map(([iss,{count,sumIT}])=>{
+    const a=count?(sumIT/count).toFixed(2):"—";
+    return `<div class="drow" data-field="issuer" data-val="${escHtml(iss)}" title="Show all: ${escHtml(iss)}">
+      <span class="dr-name">${escHtml(iss)}</span>
+      <span class="dr-count">${count}</span><span class="dr-avg">${a}</span><span class="drow-arrow">→</span></div>`;
+  }).join("");
+
+  const hdr=(n1,n2)=>`<div class="drow-hdr"><span class="dh-name"></span><span class="dh-count">#</span><span class="dh-avg">${n1}/${n2}</span></div>`;
+  const cardTitle=(label)=>`<h3>${label}<span class="dash-card-hint">click row to filter ↓</span></h3>`;
+
+  document.getElementById("dash-grid").innerHTML=`
+    <div class="dash-card">${cardTitle("By Document Status")}${hdr("Avg","orga")}${statusRows}</div>
+    <div class="dash-card">${cardTitle("By High-Level Topic")}${hdr("Avg","orga")}${topicRows}</div>
+    <div class="dash-card">${cardTitle("By Issuing Institution")}${hdr("Avg","IT")}${issuerRows}</div>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  COUNTDOWN
+// ══════════════════════════════════════════════════════
+function renderCountdown(){
+  const grid=document.getElementById("cdown-grid");
+  grid.innerHTML="";
+  selectedCountdowns.forEach(key=>{
+    const opt=COUNTDOWN_OPTIONS.find(o=>o.key===key);
+    if(!opt) return;
+    const card=document.createElement("div");
+    card.className="cdown-card";
+    card.dataset.key=key;
+    card.onclick=()=>{
+      const item=ITEMS.find(i=>i.id===opt.itemId);
+      if(item){showView("list");setTimeout(()=>openItem(item),100);}
+    };
+    card.innerHTML=`<div class="cname">${escHtml(opt.label)}</div><div class="cdays" id="cd-days-${key}">—</div><div class="cunit">days</div><div class="chms" id="cd-hms-${key}"></div><div class="ctarget">${formatDate(opt.date)}</div>`;
+    grid.appendChild(card);
+  });
+  tickCountdown();
+}
+
+function tickCountdown(){
+  const now=new Date();
+  selectedCountdowns.forEach(key=>{
+    const opt=COUNTDOWN_OPTIONS.find(o=>o.key===key);
+    if(!opt) return;
+    const el=document.getElementById(`cd-days-${key}`);
+    const eh=document.getElementById(`cd-hms-${key}`);
+    if(!el) return;
+    const diff=new Date(opt.date+"T00:00:00")-now;
+    if(diff<=0){
+      el.textContent="0";el.className="cdays past";
+      if(eh) eh.textContent="(deadline passed)";
+    } else {
+      const ts=Math.floor(diff/1000);
+      const d=Math.floor(ts/86400);
+      const h=Math.floor((ts%86400)/3600).toString().padStart(2,"0");
+      const m=Math.floor((ts%3600)/60).toString().padStart(2,"0");
+      const s=(ts%60).toString().padStart(2,"0");
+      el.textContent=d;
+      el.className="cdays"+(d<=30?" urgent":d<=90?" soon":"");
+      if(eh) eh.textContent=`${h}:${m}:${s}`;
+    }
+  });
+}
+setInterval(tickCountdown,1000);
+
+// ══════════════════════════════════════════════════════
+//  CONFIG MODAL
+// ══════════════════════════════════════════════════════
+function openCfg(){
+  tempSelected=[...selectedCountdowns];
+  const list=document.getElementById("cfg-list");
+  list.innerHTML="";
+  COUNTDOWN_OPTIONS.forEach(opt=>{
+    const checked=tempSelected.includes(opt.key);
+    const d=daysUntil(opt.date);
+    const div=document.createElement("div");
+    div.className="cfg-opt"+(checked?" checked":"");
+    div.innerHTML=`<input type="checkbox" id="cfgchk-${opt.key}" ${checked?"checked":""}><div><div class="co-name">${escHtml(opt.label)}</div></div><span class="co-date">${formatDate(opt.date)}</span><span class="co-diff">${d>0?d+" days":"past"}</span>`;
+    div.querySelector("input").addEventListener("change",function(){
+      if(this.checked){
+        if(tempSelected.length>=5){this.checked=false;updateCfgNote();return;}
+        tempSelected.push(opt.key);div.classList.add("checked");
+      } else {
+        tempSelected=tempSelected.filter(k=>k!==opt.key);div.classList.remove("checked");
+      }
+      updateCfgNote();
+    });
+    list.appendChild(div);
+  });
+  updateCfgNote();
+  document.getElementById("cfg-overlay").classList.add("open");
+}
+
+function updateCfgNote(){
+  const n=document.getElementById("cfg-max-note");
+  n.textContent=`${tempSelected.length}/5 selected`;
+  n.style.color=tempSelected.length===5?"var(--green)":"var(--amber)";
+}
+
+function closeCfg(){document.getElementById("cfg-overlay").classList.remove("open");}
+function closeCfgOutside(e){if(e.target===document.getElementById("cfg-overlay"))closeCfg();}
+
+function saveCfg(){
+  selectedCountdowns=[...tempSelected];
+  closeCfg();
+  renderCountdown();
+}
+
+// ══════════════════════════════════════════════════════
+//  VIEWS
+// ══════════════════════════════════════════════════════
+function showView(v){
+  document.getElementById("view-dashboard").style.display=v==="dashboard"?"block":"none";
+  document.getElementById("view-list").style.display=v==="list"?"block":"none";
+  document.querySelectorAll(".view-btn").forEach((b,i)=>{
+    b.classList.toggle("active",(i===0&&v==="dashboard")||(i===1&&v==="list"));
+  });
+  if(v==="list") renderTable();
+}
+
+function filterBy(field,val){
+  activeFilterKey=field;activeFilterVal=val;
+  document.getElementById("filter-sep").style.display="inline";
+  document.getElementById("active-filter-tag").style.display="inline-flex";
+  document.getElementById("active-filter-text").textContent=val;
+  const selId=field==="topic"?"filter-topic":field==="issuer"?"filter-issuer":"filter-status";
+  const sel=document.getElementById(selId);
+  if(sel) sel.value=val;
+  showView("list");applyFilters();
+}
+
+function clearActiveFilter(){
+  activeFilterKey=null;activeFilterVal=null;
+  document.getElementById("filter-sep").style.display="none";
+  document.getElementById("active-filter-tag").style.display="none";
+  ["filter-topic","filter-issuer","filter-status"].forEach(id=>{document.getElementById(id).value="";});
+  document.getElementById("search-input").value="";
+  applyFilters();
+}
+
+function toggleNewFilter(){
+  showNewOnly=!showNewOnly;
+  document.getElementById("btn-new-filter").classList.toggle("active",showNewOnly);
+  applyFilters();
+}
+
+function clearAllFilters(){
+  showNewOnly=false;
+  document.getElementById("btn-new-filter").classList.remove("active");
+  clearActiveFilter();
+}
+
+// ══════════════════════════════════════════════════════
+//  TABLE
+// ══════════════════════════════════════════════════════
+function populateSelects(){
+  const topics=[...new Set(ITEMS.map(i=>i.topic))].sort();
+  const issuers=[...new Set(ITEMS.map(i=>i.issuer))].sort();
+  const statuses=[...new Set(ITEMS.map(i=>i.status))].sort();
+  function fill(id,opts){
+    const sel=document.getElementById(id);
+    opts.forEach(o=>{const op=document.createElement("option");op.value=o;op.textContent=o;sel.appendChild(op);});
+  }
+  fill("filter-topic",topics);fill("filter-issuer",issuers);fill("filter-status",statuses);
+}
+
+function getFiltered(){
+  const q=(document.getElementById("search-input").value||"").toLowerCase();
+  const topic=document.getElementById("filter-topic").value;
+  const issuer=document.getElementById("filter-issuer").value;
+  const status=document.getElementById("filter-status").value;
+  const sort=document.getElementById("filter-sort").value;
+  let arr=ITEMS.filter(item=>{
+    if(showNewOnly && !item.isNew) return false;
+    if(topic && item.topic!==topic) return false;
+    if(issuer && item.issuer!==issuer) return false;
+    if(status && item.status!==status) return false;
+    if(q){
+      const hay=[item.summary,item.topic,item.issuer,item.status,item.pubDate,item.appDate,item.impact].join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  arr.sort((a,b)=>{
+    if(sort==="cpxOrga") return b.cpxOrga-a.cpxOrga;
+    if(sort==="topic") return a.topic.localeCompare(b.topic);
+    if(sort==="issuer") return a.issuer.localeCompare(b.issuer);
+    if(sort==="status") return a.status.localeCompare(b.status);
+    return a.id-b.id;
+  });
+  return arr;
+}
+
+function applyFilters(){currentPage=1;renderTable();}
+
+function renderTable(){
+  const filtered=getFiltered();
+  const total=filtered.length;
+  const totalPages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  if(currentPage>totalPages) currentPage=totalPages;
+  const start=(currentPage-1)*PAGE_SIZE;
+  const slice=filtered.slice(start,start+PAGE_SIZE);
+  const tbody=document.getElementById("tbl-body");
+  if(!filtered.length){
+    tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="ei">🔍</div><p>No regulations match your filters.</p></div></td></tr>`;
+  } else {
+    tbody.innerHTML=slice.map(item=>`
+      <tr class="${item.isNew?'item-new':''}" onclick="openItem(ITEMS.find(i=>i.id===${item.id}))">
+        <td class="td-id">#${item.id}</td>
+        <td><span class="ttag">${escHtml(item.topic)}</span></td>
+        <td class="td-summary"><div class="td-summary-txt">${escHtml(item.summary)}</div></td>
+        <td class="td-date">${escHtml(item.pubDate)}</td>
+        <td class="td-issuer">${escHtml(item.issuer)}</td>
+        <td>${statusBadge(item.status)}</td>
+        <td class="td-cpx"><span class="cpill c${item.cpxOrga}" title="Orga: ${item.cpxOrga}">${item.cpxOrga}</span>&thinsp;<span class="cpill c${item.cpxIT}" title="IT: ${item.cpxIT}">${item.cpxIT}</span></td>
+        <td class="td-link"><a href="${escHtml(item.link)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ ${escHtml(domainShort(item.link))}</a></td>
+      </tr>`).join("");
+  }
+  document.getElementById("fcount").textContent=`${total} of ${ITEMS.length} regulations`;
+  const pgWrap=document.getElementById("pg-wrap");
+  document.getElementById("page-info").textContent=`Showing ${Math.min(start+1,total)}–${Math.min(start+PAGE_SIZE,total)} of ${total}`;
+  pgWrap.innerHTML="";
+  if(totalPages>1){
+    const mk=(lbl,pg,dis,act)=>{const b=document.createElement("button");b.className="pg-btn"+(act?" active":"");b.textContent=lbl;b.disabled=dis;b.onclick=()=>{currentPage=pg;renderTable();};return b;};
+    pgWrap.appendChild(mk("‹",currentPage-1,currentPage===1,false));
+    for(let p=1;p<=totalPages;p++){
+      if(totalPages<=7||p===1||p===totalPages||Math.abs(p-currentPage)<=1) pgWrap.appendChild(mk(p,p,false,p===currentPage));
+      else if(Math.abs(p-currentPage)===2){const sp=document.createElement("span");sp.textContent="…";sp.style.cssText="padding:4px 6px;color:var(--gray)";pgWrap.appendChild(sp);}
+    }
+    pgWrap.appendChild(mk("›",currentPage+1,currentPage===totalPages,false));
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  DETAIL PANEL
+// ══════════════════════════════════════════════════════
+function openItem(item){
+  if(!item) return;
+  document.getElementById("dp-id").textContent=`ITEM #${item.id} · ${item.topic}`;
+  document.getElementById("dp-title").textContent=item.summary.split("—")[0].trim();
+  document.getElementById("dp-topic").textContent=item.topic;
+  document.getElementById("dp-issuer").textContent=item.issuer;
+  document.getElementById("dp-status").innerHTML=statusBadge(item.status);
+  document.getElementById("dp-pubdate").textContent=item.pubDate;
+  document.getElementById("dp-appdate").textContent=item.appDate;
+  document.getElementById("dp-summary").textContent=item.summary;
+  document.getElementById("dp-impact").textContent=item.impact;
+  const banner=document.getElementById("dp-new-banner");
+  if(banner) banner.style.display=item.isNew?"flex":"none";
+  document.getElementById("dp-cpx-orga").textContent=item.cpxOrga;
+  document.getElementById("dp-cpx-it").textContent=item.cpxIT;
+  document.getElementById("dp-cpx-orga-bar").style.cssText=`width:${item.cpxOrga*20}%;background:${cpxColor(item.cpxOrga)}`;
+  document.getElementById("dp-cpx-it-bar").style.cssText=`width:${item.cpxIT*20}%;background:${cpxColor(item.cpxIT)}`;
+  document.getElementById("dp-link").href=item.link;
+  document.getElementById("panel-overlay").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+
+function closePanel(e){
+  if(e&&e.target!==document.getElementById("panel-overlay")) return;
+  document.getElementById("panel-overlay").classList.remove("open");
+  document.body.style.overflow="";
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    document.getElementById("panel-overlay").classList.remove("open");
+    document.getElementById("cfg-overlay").classList.remove("open");
+    document.body.style.overflow="";
+  }
+});
+
+// ══════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════
+(function init(){
+  if(typeof BUILD_META !== "undefined"){
+    document.getElementById("hdr-badge").textContent="Last update: "+BUILD_META.lastUpdate;
+    if(BUILD_META.newCount > 0){
+      const badge=document.getElementById("nav-new-badge");
+      badge.textContent=BUILD_META.newCount;
+      badge.style.display="inline-flex";
+    }
+  }
+  populateSelects();
+  renderDashboard();
+  renderCountdown();
+
+  // Event delegation for dashboard rows (data-field / data-val)
+  // This avoids the inline-onclick double-quote quoting bug in Chrome.
+  document.getElementById("view-dashboard").addEventListener("click", function(e){
+    const row = e.target.closest(".drow[data-field]");
+    if(row) filterBy(row.dataset.field, row.dataset.val);
+  });
+})();
+</script>
+</body>
+</html>

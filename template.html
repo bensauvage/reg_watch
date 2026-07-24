@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LU Branch — Regulatory Watch</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1a3558;--navy2:#243b6e;
+  --blue:#2563eb;--blue-light:#dbeafe;--blue-mid:#93c5fd;
+  --green:#059669;--green-light:#d1fae5;
+  --amber:#d97706;--amber-light:#fef3c7;
+  --orange:#ea580c;--orange-light:#ffedd5;
+  --red:#dc2626;--red-light:#fee2e2;
+  --teal:#0d9488;--teal-light:#ccfbf1;
+  --purple:#7c3aed;--purple-light:#ede9fe;
+  --gray:#6b7280;--gray-light:#f3f4f6;
+  --bg:#eef2f7;--card:#fff;
+  --text:#1e293b;--text2:#475569;--border:#e2e8f0;
+  --sh:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --sh-md:0 4px 6px rgba(0,0,0,.07),0 2px 4px rgba(0,0,0,.06);
+  --sh-lg:0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.05);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;font-size:14px}
+
+.site-header{background:var(--navy);color:#fff;padding:18px 32px 14px}
+.hdr-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.hdr-title{font-size:1.3rem;font-weight:800;letter-spacing:-.02em}
+.hdr-meta{display:flex;gap:20px;margin-top:6px;font-size:.75rem;color:#94a3b8}
+.hdr-badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#e2e8f0;border-radius:6px;padding:4px 10px;font-size:.72rem;font-weight:600;white-space:nowrap}
+
+.countdown-bar{background:linear-gradient(135deg,#0f2744 0%,#1a3558 100%);border-top:1px solid rgba(255,255,255,.08);padding:14px 32px}
+.cdown-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cdown-hdr-left{display:flex;align-items:center;gap:8px}
+.cdown-label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#64748b}
+.cdown-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.cdown-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:11px 10px;text-align:center;min-width:0;cursor:pointer;transition:background .15s}
+.cdown-card:hover{background:rgba(255,255,255,.1)}
+.cdown-card .cname{font-size:.68rem;color:#94a3b8;font-weight:500;line-height:1.3;min-height:2.4em;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.cdown-card .cdays{font-size:2rem;font-weight:900;color:#fff;line-height:1;font-variant-numeric:tabular-nums}
+.cdown-card .cdays.urgent{color:#fbbf24}
+.cdown-card .cdays.soon{color:#fb923c}
+.cdown-card .cdays.past{color:#4b5563;text-decoration:line-through}
+.cdown-card .cunit{font-size:.65rem;color:#4b5563;margin-top:1px}
+.cdown-card .chms{font-size:.7rem;color:#475569;margin-top:4px;font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+.cdown-card .ctarget{font-size:.63rem;color:#374151;margin-top:5px}
+.btn-cfg{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#cbd5e1;border-radius:6px;padding:5px 12px;font-size:.73rem;cursor:pointer;display:flex;align-items:center;gap:5px;transition:background .15s}
+.btn-cfg:hover{background:rgba(255,255,255,.18)}
+
+.main-wrap{max-width:1440px;margin:0 auto;padding:20px 32px}
+.view-nav{display:flex;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.view-btn{padding:6px 18px;border-radius:7px;border:1px solid var(--border);background:var(--card);color:var(--text2);font-size:.82rem;cursor:pointer;font-weight:500;transition:all .15s;box-shadow:var(--sh)}
+.view-btn.active,.view-btn:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.view-btn.active{font-weight:700}
+.view-sep{color:var(--border);font-size:1.2rem;margin:0 4px}
+.active-filter-tag{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:var(--blue-light);color:#1d4ed8;border-radius:20px;font-size:.73rem;font-weight:600;border:1px solid var(--blue-mid)}
+.active-filter-tag button{background:none;border:none;cursor:pointer;color:#1d4ed8;font-size:.9rem;line-height:1;padding-left:4px}
+
+.section{margin-bottom:24px}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--card);border-radius:10px;padding:16px 20px;box-shadow:var(--sh);border-left:4px solid var(--navy)}
+.stat-card .s-label{font-size:.72rem;color:var(--text2);font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.stat-card .s-value{font-size:2.2rem;font-weight:900;color:var(--navy);line-height:1.1;margin-top:2px}
+.stat-card .s-sub{font-size:.72rem;color:var(--gray);margin-top:2px}
+
+.dash-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.dash-card{background:var(--card);border-radius:10px;padding:16px;box-shadow:var(--sh)}
+.dash-card h3{font-size:.73rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text2);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.drow{display:flex;align-items:center;padding:6px 8px;border-radius:7px;cursor:pointer;transition:all .12s;gap:8px;border:1px solid transparent}
+.drow:hover{background:var(--blue-light);border-color:var(--blue-mid)}
+.drow .dr-name{font-size:.82rem;color:var(--text);flex:1;min-width:0;transition:color .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drow:hover .dr-name{color:var(--blue)}
+.drow-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-right:2px}
+.drow .dr-status-name{font-size:.81rem;color:var(--text);flex:1;min-width:0;transition:color .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.drow:hover .dr-status-name{color:var(--blue)}
+.drow .dr-count{font-size:.82rem;font-weight:800;color:var(--navy);min-width:22px;text-align:right;transition:color .12s}
+.drow:hover .dr-count{color:var(--blue)}
+.drow .dr-avg{font-size:.72rem;color:var(--text2);min-width:52px;text-align:right}
+.drow .drow-arrow{font-size:.75rem;color:var(--blue);opacity:0;transform:translateX(-4px);transition:opacity .12s,transform .12s;flex-shrink:0}
+.drow:hover .drow-arrow{opacity:1;transform:translateX(0)}
+.drow-hdr{display:flex;padding:3px 6px;gap:8px}
+.drow-hdr span{font-size:.68rem;color:var(--gray);text-transform:uppercase;letter-spacing:.06em}
+.drow-hdr .dh-name{flex:1}
+.drow-hdr .dh-count{min-width:22px;text-align:right}
+.drow-hdr .dh-avg{min-width:52px;text-align:right}
+.dash-card h3{display:flex;align-items:center;justify-content:space-between}
+.dash-card-hint{font-size:.65rem;color:var(--gray);font-weight:400;text-transform:none;letter-spacing:0}
+
+.badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:4px;font-size:.68rem;font-weight:700;white-space:nowrap;line-height:1.4}
+.b-green{background:var(--green-light);color:#064e3b}
+.b-blue{background:var(--blue-light);color:#1e40af}
+.b-blue2{background:#e0f2fe;color:#0c4a6e}
+.b-amber{background:var(--amber-light);color:#78350f}
+.b-orange{background:var(--orange-light);color:#7c2d12}
+.b-gray{background:var(--gray-light);color:#374151}
+.b-teal{background:var(--teal-light);color:#134e4a}
+.b-purple{background:var(--purple-light);color:#4c1d95}
+
+.filters-bar{background:var(--card);border-radius:10px;padding:12px 16px;box-shadow:var(--sh);margin-bottom:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fsearch{flex:1;min-width:180px;position:relative}
+.fsearch input{width:100%;padding:7px 10px 7px 32px;border:1px solid var(--border);border-radius:6px;font-size:.83rem;color:var(--text);outline:none;background:#fff}
+.fsearch input:focus{border-color:var(--blue)}
+.fsearch .si{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--gray);font-size:.85rem}
+.fsel{padding:7px 28px 7px 10px;border:1px solid var(--border);border-radius:6px;font-size:.8rem;color:var(--text);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 8px center;appearance:none;cursor:pointer;outline:none}
+.fsel:focus{border-color:var(--blue)}
+.fcount{font-size:.78rem;color:var(--text2);margin-left:auto;white-space:nowrap}
+.btn-clr{padding:7px 12px;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text2);font-size:.78rem;cursor:pointer}
+.btn-clr:hover{background:var(--gray-light)}
+
+.tbl-wrap{background:var(--card);border-radius:10px;box-shadow:var(--sh);overflow:hidden}
+table{width:100%;border-collapse:collapse}
+thead th{background:#f8fafc;padding:9px 12px;text-align:left;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text2);border-bottom:2px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;transition:color .1s}
+thead th:hover{color:var(--navy)}
+tbody tr{border-bottom:1px solid var(--border);cursor:pointer;transition:background .08s}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:#f8fafc}
+tbody td{padding:9px 12px;font-size:.81rem;vertical-align:top}
+.td-id{color:var(--gray);font-weight:600;font-size:.75rem;white-space:nowrap}
+.ttag{display:inline-block;padding:2px 7px;background:#e0f2fe;color:#075985;border-radius:4px;font-size:.68rem;font-weight:600;line-height:1.4}
+.td-summary{max-width:300px}
+.td-summary-txt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.45;color:var(--text)}
+.td-date{white-space:nowrap;color:var(--text2);font-size:.77rem}
+.td-issuer{white-space:nowrap;font-weight:600;font-size:.78rem}
+.td-cpx{text-align:center;white-space:nowrap}
+.cpill{display:inline-flex;width:22px;height:22px;border-radius:50%;align-items:center;justify-content:center;font-size:.72rem;font-weight:800}
+.c1{background:#dcfce7;color:#166534}
+.c2{background:#d1fae5;color:#065f46}
+.c3{background:#fef9c3;color:#713f12}
+.c4{background:#fed7aa;color:#9a3412}
+.c5{background:#fecaca;color:#991b1b}
+.td-link a{color:var(--blue);font-size:.75rem;text-decoration:none}
+.td-link a:hover{text-decoration:underline}
+
+.tbl-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:.78rem;color:var(--text2)}
+.pg-wrap{display:flex;gap:4px}
+.pg-btn{padding:4px 9px;border:1px solid var(--border);border-radius:5px;background:#fff;color:var(--text2);font-size:.78rem;cursor:pointer;transition:all .1s}
+.pg-btn:hover,.pg-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.pg-btn.active{font-weight:700}
+.pg-btn:disabled{opacity:.35;cursor:not-allowed}
+
+.empty-state{text-align:center;padding:60px 20px;color:var(--text2)}
+.empty-state .ei{font-size:2.5rem;margin-bottom:10px}
+
+/* ── NEW / UPDATED ITEMS ── */
+tbody tr.item-new{background:#fffbeb}
+tbody tr.item-new:hover{background:#fef3c7}
+tbody tr.item-new td.td-id::after{content:"NEW";display:inline-block;margin-left:4px;font-size:.58rem;font-weight:800;background:#d97706;color:#fff;border-radius:3px;padding:1px 4px;vertical-align:middle;line-height:1.4}
+.new-badge{display:inline-flex;align-items:center;justify-content:center;background:#d97706;color:#fff;border-radius:10px;font-size:.65rem;font-weight:800;padding:1px 7px;margin-left:6px;vertical-align:middle}
+.dp-new-banner{background:#fef3c7;border:1px solid #fde68a;border-radius:7px;padding:9px 13px;font-size:.8rem;color:#92400e;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.btn-new-filter{padding:6px 14px;border-radius:7px;border:1px solid #fde68a;background:#fffbeb;color:#92400e;font-size:.8rem;cursor:pointer;font-weight:600;transition:all .15s}
+.btn-new-filter.active,.btn-new-filter:hover{background:#d97706;color:#fff;border-color:#d97706}
+
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:none;align-items:flex-start;justify-content:flex-end}
+.panel-overlay.open{display:flex}
+.detail-panel{width:580px;max-width:100%;height:100vh;background:#fff;overflow-y:auto;box-shadow:var(--sh-lg);animation:slideIn .2s ease}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.dp-header{padding:18px 22px 14px;background:var(--navy);color:#fff;position:sticky;top:0;z-index:1}
+.dp-header .dp-id{font-size:.7rem;color:#94a3b8;font-weight:700;letter-spacing:.08em;margin-bottom:3px}
+.dp-header h2{font-size:.98rem;font-weight:800;line-height:1.4;padding-right:32px}
+.dp-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.15);border:none;color:#fff;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center}
+.dp-close:hover{background:rgba(255,255,255,.25)}
+.dp-body{padding:18px 22px}
+.dp-section{margin-bottom:18px}
+.dp-section-lbl{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--text2);margin-bottom:6px}
+.dp-text{font-size:.86rem;color:var(--text);line-height:1.65}
+.dp-meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.dp-meta-item{background:var(--gray-light);border-radius:8px;padding:10px 12px}
+.dp-meta-item .ml{font-size:.67rem;color:var(--text2);font-weight:700;text-transform:uppercase;margin-bottom:2px}
+.dp-meta-item .mv{font-size:.83rem;color:var(--text);font-weight:500;line-height:1.4}
+.cpx-row{display:flex;gap:20px;margin-bottom:6px}
+.cpx-item{flex:1}
+.cpx-item-lbl{font-size:.7rem;color:var(--text2);margin-bottom:4px}
+.cpx-bar-wrap{display:flex;align-items:center;gap:8px}
+.cpx-num{font-size:.95rem;font-weight:800;min-width:14px}
+.cpx-bar{flex:1;height:7px;background:var(--border);border-radius:4px;overflow:hidden}
+.cpx-fill{height:100%;border-radius:4px;transition:width .3s}
+.btn-ext{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;background:var(--blue);color:#fff;border-radius:7px;font-size:.83rem;font-weight:700;text-decoration:none;margin-top:4px;transition:background .15s}
+.btn-ext:hover{background:#1d4ed8}
+.dp-divider{border:none;border-top:1px solid var(--border);margin:16px 0}
+
+.cfg-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:none;align-items:center;justify-content:center}
+.cfg-overlay.open{display:flex}
+.cfg-modal{background:#fff;border-radius:12px;box-shadow:var(--sh-lg);width:540px;max-width:92%;max-height:80vh;overflow:hidden;display:flex;flex-direction:column}
+.cfg-modal-hdr{padding:20px 24px 14px;border-bottom:1px solid var(--border)}
+.cfg-modal-hdr h2{font-size:1rem;font-weight:800;color:var(--navy)}
+.cfg-modal-hdr p{font-size:.78rem;color:var(--text2);margin-top:3px}
+.cfg-list{flex:1;overflow-y:auto;padding:14px 24px}
+.cfg-opt{display:flex;align-items:center;gap:10px;padding:9px 10px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .1s;margin-bottom:7px}
+.cfg-opt:hover{background:var(--gray-light)}
+.cfg-opt.checked{background:var(--blue-light);border-color:var(--blue-mid)}
+.cfg-opt input[type=checkbox]{width:15px;height:15px;cursor:pointer;accent-color:var(--blue);flex-shrink:0}
+.cfg-opt .co-name{font-size:.83rem;font-weight:600;color:var(--text);flex:1}
+.cfg-opt .co-date{font-size:.72rem;color:var(--text2);white-space:nowrap}
+.cfg-opt .co-diff{font-size:.68rem;color:var(--text2);white-space:nowrap;min-width:56px;text-align:right}
+.cfg-modal-ftr{padding:12px 24px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;background:#f8fafc}
+.btn-prim{padding:8px 22px;background:var(--navy);color:#fff;border:none;border-radius:7px;font-size:.83rem;font-weight:700;cursor:pointer}
+.btn-prim:hover{background:var(--navy2)}
+.btn-sec{padding:8px 16px;background:#fff;color:var(--text);border:1px solid var(--border);border-radius:7px;font-size:.83rem;cursor:pointer}
+.btn-sec:hover{background:var(--gray-light)}
+.cfg-max-note{font-size:.72rem;font-weight:600;margin-right:auto;display:flex;align-items:center}
+
+.legend{background:var(--card);border-radius:10px;padding:14px 18px;box-shadow:var(--sh);margin-top:20px;font-size:.75rem;color:var(--text2);line-height:1.7}
+.legend strong{color:var(--text);font-weight:700}
+
+.build-stamp{font-size:.68rem;color:#64748b;text-align:right;padding:8px 32px;font-style:italic}
+
+@media(max-width:1000px){
+  .cdown-grid{grid-template-columns:repeat(3,1fr)}
+  .dash-grid{grid-template-columns:1fr 1fr}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .main-wrap{padding:16px}
+}
+@media(max-width:640px){
+  .site-header{padding:14px 16px}
+  .countdown-bar{padding:12px 16px}
+  .cdown-grid{grid-template-columns:1fr 1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .stats-row{grid-template-columns:1fr}
+  .main-wrap{padding:12px 14px}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="hdr-top">
+    <div>
+      <div class="hdr-title">Luxembourg Branch — Regulatory Watch</div>
+      <div class="hdr-meta">
+        <span>🔍 Scope: private banking &amp; mortgage — EU Commission, EP, Council, ESMA, EBA, AMLA, ECB, CSSF, MoF LU</span>
+      </div>
+    </div>
+    <div class="hdr-badge" id="hdr-badge">Loading…</div>
+  </div>
+</header>
+
+<div class="countdown-bar">
+  <div class="cdown-hdr">
+    <div class="cdown-hdr-left">
+      <span class="cdown-label">⏱ Key Deadlines Countdown</span>
+    </div>
+    <button class="btn-cfg" onclick="openCfg()">
+      <svg width="14" height="14" viewBox="0 0 20 20" fill="currentColor"><path d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" fill-rule="evenodd" clip-rule="evenodd"/></svg>
+      Configure
+    </button>
+  </div>
+  <div class="cdown-grid" id="cdown-grid"></div>
+</div>
+
+<div class="main-wrap">
+  <div class="view-nav" id="view-nav">
+    <button class="view-btn active" onclick="showView('dashboard')">📊 Dashboard</button>
+    <button class="view-btn" onclick="showView('list')">📋 All Regulations<span class="new-badge" id="nav-new-badge" style="display:none"></span></button>
+    <span class="view-sep" id="filter-sep" style="display:none">›</span>
+    <span class="active-filter-tag" id="active-filter-tag" style="display:none">
+      <span id="active-filter-text"></span>
+      <button onclick="clearActiveFilter()">✕</button>
+    </span>
+  </div>
+
+  <!-- Dashboard view (fully rendered by JS from ITEMS) -->
+  <div id="view-dashboard">
+    <div class="stats-row" id="dash-stats"></div>
+    <div class="dash-grid" id="dash-grid"></div>
+    <div class="legend">
+      <strong>Complexity scale:</strong>
+      1 = minimal effort &nbsp;|&nbsp; 2 = focused policy review &nbsp;|&nbsp; 3 = material cross-function project &nbsp;|&nbsp;
+      4 = multi-stream programme with IT build &nbsp;|&nbsp; 5 = strategic overhaul (branch-wide, including IT rebuilds).<br>
+      <strong>Sources:</strong> eur-lex.europa.eu · finance.ec.europa.eu · consilium.europa.eu · europarl.europa.eu · esma.europa.eu · eba.europa.eu · amla.europa.eu · ecb.europa.eu · cssf.lu · legilux.public.lu · mfin.gouvernement.lu
+    </div>
+  </div>
+
+  <!-- List view -->
+  <div id="view-list" style="display:none">
+    <div class="filters-bar">
+      <div class="fsearch">
+        <span class="si">🔍</span>
+        <input type="text" id="search-input" placeholder="Search regulations…" oninput="applyFilters()">
+      </div>
+      <select class="fsel" id="filter-topic" onchange="applyFilters()"><option value="">All Topics</option></select>
+      <select class="fsel" id="filter-issuer" onchange="applyFilters()"><option value="">All Issuers</option></select>
+      <select class="fsel" id="filter-status" onchange="applyFilters()"><option value="">All Statuses</option></select>
+      <select class="fsel" id="filter-sort" onchange="applyFilters()">
+        <option value="id">Sort: #</option>
+        <option value="topic">Sort: Topic</option>
+        <option value="issuer">Sort: Issuer</option>
+        <option value="status">Sort: Status</option>
+        <option value="cpxOrga">Sort: Complexity ↓</option>
+      </select>
+      <button class="btn-new-filter" id="btn-new-filter" onclick="toggleNewFilter()">🆕 New only</button>
+      <button class="btn-clr" onclick="clearAllFilters()">Clear</button>
+      <span class="fcount" id="fcount"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:40px">#</th>
+            <th style="width:140px">Topic</th>
+            <th>Summary</th>
+            <th style="width:130px">Pub. Date</th>
+            <th style="width:120px">Issuer</th>
+            <th style="width:145px">Status</th>
+            <th style="width:55px" title="Complexity Organisation / IT">Cpx</th>
+            <th style="width:60px">Link</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-body"></tbody>
+      </table>
+      <div class="tbl-footer">
+        <span id="page-info"></span>
+        <div class="pg-wrap" id="pg-wrap"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detail panel -->
+<div class="panel-overlay" id="panel-overlay" onclick="closePanel(event)">
+  <div class="detail-panel" id="detail-panel">
+    <div class="dp-header">
+      <div class="dp-id" id="dp-id"></div>
+      <h2 id="dp-title"></h2>
+      <button class="dp-close" onclick="closePanel()">✕</button>
+    </div>
+    <div class="dp-body">
+      <div class="dp-new-banner" id="dp-new-banner" style="display:none">🆕 New or updated since last check</div>
+      <div class="dp-meta-grid">
+        <div class="dp-meta-item"><div class="ml">Topic</div><div class="mv" id="dp-topic"></div></div>
+        <div class="dp-meta-item"><div class="ml">Issuer</div><div class="mv" id="dp-issuer"></div></div>
+        <div class="dp-meta-item"><div class="ml">Status</div><div class="mv" id="dp-status"></div></div>
+        <div class="dp-meta-item"><div class="ml">Publication Date</div><div class="mv" id="dp-pubdate"></div></div>
+      </div>
+      <div class="dp-meta-item" style="margin-bottom:14px">
+        <div class="ml">Expected Date of Application</div>
+        <div class="mv" id="dp-appdate" style="font-size:.88rem"></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-lbl">Summary</div>
+        <div class="dp-text" id="dp-summary"></div>
+      </div>
+      <div class="dp-section">
+        <div class="dp-section-lbl">Potential Impact on Branch</div>
+        <div class="dp-text" id="dp-impact"></div>
+      </div>
+      <hr class="dp-divider">
+      <div class="dp-section-lbl" style="margin-bottom:10px">Complexity Assessment</div>
+      <div class="cpx-row">
+        <div class="cpx-item">
+          <div class="cpx-item-lbl">Organisation</div>
+          <div class="cpx-bar-wrap">
+            <span class="cpx-num" id="dp-cpx-orga"></span>
+            <div class="cpx-bar"><div class="cpx-fill" id="dp-cpx-orga-bar"></div></div>
+          </div>
+        </div>
+        <div class="cpx-item">
+          <div class="cpx-item-lbl">IT</div>
+          <div class="cpx-bar-wrap">
+            <span class="cpx-num" id="dp-cpx-it"></span>
+            <div class="cpx-bar"><div class="cpx-fill" id="dp-cpx-it-bar"></div></div>
+          </div>
+        </div>
+      </div>
+      <hr class="dp-divider">
+      <div class="dp-section">
+        <div class="dp-section-lbl">Original Publication</div>
+        <a class="btn-ext" id="dp-link" href="#" target="_blank" rel="noopener">
+          <svg width="13" height="13" viewBox="0 0 20 20" fill="currentColor"><path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"/><path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"/></svg>
+          Open source document
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Config modal -->
+<div class="cfg-overlay" id="cfg-overlay" onclick="closeCfgOutside(event)">
+  <div class="cfg-modal">
+    <div class="cfg-modal-hdr">
+      <h2>Configure Countdown Timers</h2>
+      <p>Select up to 5 key regulatory deadlines to display in the countdown bar.</p>
+    </div>
+    <div class="cfg-list" id="cfg-list"></div>
+    <div class="cfg-modal-ftr">
+      <span class="cfg-max-note" id="cfg-max-note"></span>
+      <button class="btn-sec" onclick="closeCfg()">Cancel</button>
+      <button class="btn-prim" onclick="saveCfg()">Apply</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  DATA — auto-generated by build_site.py
+// ══════════════════════════════════════════════════════
+// %%BUILD_META%%
+%%ITEMS_JS%%
+
+// ══════════════════════════════════════════════════════
+//  COUNTDOWN OPTIONS (keyed by itemId so they follow data updates)
+// ══════════════════════════════════════════════════════
+const COUNTDOWN_OPTIONS = [
+  {key:"listing-act",   label:"Listing Act Prospectus Regulation",     date:"2026-06-05", itemId:5},
+  {key:"dmd2",          label:"DMD II Application",                     date:"2026-06-19", itemId:41},
+  {key:"mica",          label:"MiCA Grandfathering End",                date:"2026-07-01", itemId:57},
+  {key:"esg-ratings",  label:"ESG Ratings Regulation",                 date:"2026-07-02", itemId:48},
+  {key:"emir3-report", label:"EMIR 3 First AAR Reporting",             date:"2026-07-31", itemId:54},
+  {key:"ai-act",       label:"EU AI Act Full Application",              date:"2026-08-02", itemId:24},
+  {key:"esrs",         label:"Simplified ESRS Adoption",                date:"2026-09-01", itemId:46},
+  {key:"ccd2",         label:"Consumer Credit Directive II",            date:"2026-11-20", itemId:40},
+  {key:"crd6-tcb",     label:"CRD VI Third-Country Branch",             date:"2027-01-11", itemId:36},
+  {key:"amlr",         label:"AMLR Application",                       date:"2027-07-10", itemId:8},
+  {key:"t1",           label:"T+1 Settlement EU Go-Live",              date:"2027-10-11", itemId:51},
+  {key:"fida",         label:"FiDA Wave 1 (Mortgages/Retail)",         date:"2027-12-31", itemId:30},
+  {key:"ris",          label:"RIS / MiFID Reform (approx.)",           date:"2028-06-01", itemId:1},
+  {key:"psr",          label:"Payment Services Regulation (approx.)",  date:"2028-01-01", itemId:27},
+];
+
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let selectedCountdowns = ["mica","ai-act","amlr","crd6-tcb","t1"];
+let tempSelected = [];
+let activeFilterKey = null;
+let activeFilterVal = null;
+let showNewOnly = false;
+let currentPage = 1;
+const PAGE_SIZE = 20;
+
+// ══════════════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════════════
+const STATUS_CLASS = {
+  "Applicable / In force":                   "b-green",
+  "Adopted (not yet applicable)":            "b-blue",
+  "Political agreement (awaiting OJ)":       "b-amber",
+  "Trilogue / Political agreement pending":  "b-orange",
+  "Public consultation":                     "b-blue2",
+  "Draft / Call for evidence":               "b-gray",
+  "Partially applicable":                    "b-teal",
+  "Level 2 pending":                         "b-purple",
+};
+
+function statusBadge(s){
+  return `<span class="badge ${STATUS_CLASS[s]||'b-gray'}">${escHtml(s)}</span>`;
+}
+
+function escHtml(s){
+  return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+function cpxColor(n){
+  return ["","#166534","#059669","#d97706","#ea580c","#dc2626"][n]||"#6b7280";
+}
+
+function daysUntil(dateStr){
+  return Math.ceil((new Date(dateStr+"T00:00:00")-new Date())/(1000*60*60*24));
+}
+
+function formatDate(dateStr){
+  return new Date(dateStr+"T00:00:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+}
+
+function domainShort(url){
+  try{return new URL(url).hostname.replace("www.","");}catch{return url;}
+}
+
+function avg(arr,fn){
+  if(!arr.length) return "—";
+  return (arr.reduce((s,i)=>s+(fn(i)||0),0)/arr.length).toFixed(2);
+}
+
+// ══════════════════════════════════════════════════════
+//  DASHBOARD — fully dynamic
+// ══════════════════════════════════════════════════════
+function renderDashboard(){
+  const total = ITEMS.length;
+  const avgOrga = avg(ITEMS, i=>i.cpxOrga);
+  const avgIT   = avg(ITEMS, i=>i.cpxIT);
+
+  // aggregations
+  const byStatus={}, byTopic={}, byIssuer={};
+  ITEMS.forEach(item=>{
+    // status
+    if(!byStatus[item.status]) byStatus[item.status]={count:0,sumOrga:0};
+    byStatus[item.status].count++;
+    byStatus[item.status].sumOrga+=item.cpxOrga;
+    // topic
+    if(!byTopic[item.topic]) byTopic[item.topic]={count:0,sumOrga:0};
+    byTopic[item.topic].count++;
+    byTopic[item.topic].sumOrga+=item.cpxOrga;
+    // issuer
+    if(!byIssuer[item.issuer]) byIssuer[item.issuer]={count:0,sumIT:0};
+    byIssuer[item.issuer].count++;
+    byIssuer[item.issuer].sumIT+=item.cpxIT;
+  });
+
+  // stats row
+  document.getElementById("dash-stats").innerHTML=`
+    <div class="stat-card">
+      <div class="s-label">Total Items Tracked</div>
+      <div class="s-value">${total}</div>
+      <div class="s-sub">Private banking &amp; mortgage scope</div>
+    </div>
+    <div class="stat-card" style="border-left-color:var(--orange)">
+      <div class="s-label">Avg Complexity — Organisation</div>
+      <div class="s-value" style="color:var(--orange)">${avgOrga}</div>
+      <div class="s-sub">Scale 1 (minimal) → 5 (strategic overhaul)</div>
+    </div>
+    <div class="stat-card" style="border-left-color:var(--teal)">
+      <div class="s-label">Avg Complexity — IT</div>
+      <div class="s-value" style="color:var(--teal)">${avgIT}</div>
+      <div class="s-sub">Scale 1 (monitoring) → 5 (full rebuild)</div>
+    </div>`;
+
+  // status table (ordered by count desc)
+  const statusOrder=[
+    "Applicable / In force","Adopted (not yet applicable)","Draft / Call for evidence",
+    "Political agreement (awaiting OJ)","Public consultation","Partially applicable",
+    "Trilogue / Political agreement pending","Level 2 pending"
+  ];
+  // Dot colours matching the badge palette
+  const STATUS_DOT={
+    "Applicable / In force":                  "#059669",
+    "Adopted (not yet applicable)":           "#2563eb",
+    "Political agreement (awaiting OJ)":      "#d97706",
+    "Trilogue / Political agreement pending": "#ea580c",
+    "Public consultation":                    "#0284c7",
+    "Draft / Call for evidence":              "#6b7280",
+    "Partially applicable":                   "#0d9488",
+    "Level 2 pending":                        "#7c3aed",
+  };
+
+  const statusRows = statusOrder.filter(s=>byStatus[s]).map(s=>{
+    const {count,sumOrga}=byStatus[s];
+    const a=(sumOrga/count).toFixed(2);
+    const dot=STATUS_DOT[s]||"#6b7280";
+    return `<div class="drow" data-field="status" data-val="${escHtml(s)}" title="Show all: ${escHtml(s)}">
+      <span class="drow-dot" style="background:${dot}"></span>
+      <span class="dr-status-name">${escHtml(s)}</span>
+      <span class="dr-count">${count}</span><span class="dr-avg">${a}</span><span class="drow-arrow">→</span></div>`;
+  }).join("");
+
+  const topicRows = Object.entries(byTopic).sort((a,b)=>b[1].count-a[1].count).map(([t,{count,sumOrga}])=>{
+    const a=(sumOrga/count).toFixed(2);
+    return `<div class="drow" data-field="topic" data-val="${escHtml(t)}" title="Show all: ${escHtml(t)}">
+      <span class="dr-name">${escHtml(t)}</span>
+      <span class="dr-count">${count}</span><span class="dr-avg">${a}</span><span class="drow-arrow">→</span></div>`;
+  }).join("");
+
+  const issuerRows = Object.entries(byIssuer).sort((a,b)=>b[1].count-a[1].count).map(([iss,{count,sumIT}])=>{
+    const a=count?(sumIT/count).toFixed(2):"—";
+    return `<div class="drow" data-field="issuer" data-val="${escHtml(iss)}" title="Show all: ${escHtml(iss)}">
+      <span class="dr-name">${escHtml(iss)}</span>
+      <span class="dr-count">${count}</span><span class="dr-avg">${a}</span><span class="drow-arrow">→</span></div>`;
+  }).join("");
+
+  const hdr=(n1,n2)=>`<div class="drow-hdr"><span class="dh-name"></span><span class="dh-count">#</span><span class="dh-avg">${n1}/${n2}</span></div>`;
+  const cardTitle=(label)=>`<h3>${label}<span class="dash-card-hint">click row to filter ↓</span></h3>`;
+
+  document.getElementById("dash-grid").innerHTML=`
+    <div class="dash-card">${cardTitle("By Document Status")}${hdr("Avg","orga")}${statusRows}</div>
+    <div class="dash-card">${cardTitle("By High-Level Topic")}${hdr("Avg","orga")}${topicRows}</div>
+    <div class="dash-card">${cardTitle("By Issuing Institution")}${hdr("Avg","IT")}${issuerRows}</div>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  COUNTDOWN
+// ══════════════════════════════════════════════════════
+function renderCountdown(){
+  const grid=document.getElementById("cdown-grid");
+  grid.innerHTML="";
+  selectedCountdowns.forEach(key=>{
+    const opt=COUNTDOWN_OPTIONS.find(o=>o.key===key);
+    if(!opt) return;
+    const card=document.createElement("div");
+    card.className="cdown-card";
+    card.dataset.key=key;
+    card.onclick=()=>{
+      const item=ITEMS.find(i=>i.id===opt.itemId);
+      if(item){showView("list");setTimeout(()=>openItem(item),100);}
+    };
+    card.innerHTML=`<div class="cname">${escHtml(opt.label)}</div><div class="cdays" id="cd-days-${key}">—</div><div class="cunit">days</div><div class="chms" id="cd-hms-${key}"></div><div class="ctarget">${formatDate(opt.date)}</div>`;
+    grid.appendChild(card);
+  });
+  tickCountdown();
+}
+
+function tickCountdown(){
+  const now=new Date();
+  selectedCountdowns.forEach(key=>{
+    const opt=COUNTDOWN_OPTIONS.find(o=>o.key===key);
+    if(!opt) return;
+    const el=document.getElementById(`cd-days-${key}`);
+    const eh=document.getElementById(`cd-hms-${key}`);
+    if(!el) return;
+    const diff=new Date(opt.date+"T00:00:00")-now;
+    if(diff<=0){
+      el.textContent="0";el.className="cdays past";
+      if(eh) eh.textContent="(deadline passed)";
+    } else {
+      const ts=Math.floor(diff/1000);
+      const d=Math.floor(ts/86400);
+      const h=Math.floor((ts%86400)/3600).toString().padStart(2,"0");
+      const m=Math.floor((ts%3600)/60).toString().padStart(2,"0");
+      const s=(ts%60).toString().padStart(2,"0");
+      el.textContent=d;
+      el.className="cdays"+(d<=30?" urgent":d<=90?" soon":"");
+      if(eh) eh.textContent=`${h}:${m}:${s}`;
+    }
+  });
+}
+setInterval(tickCountdown,1000);
+
+// ══════════════════════════════════════════════════════
+//  CONFIG MODAL
+// ══════════════════════════════════════════════════════
+function openCfg(){
+  tempSelected=[...selectedCountdowns];
+  const list=document.getElementById("cfg-list");
+  list.innerHTML="";
+  COUNTDOWN_OPTIONS.forEach(opt=>{
+    const checked=tempSelected.includes(opt.key);
+    const d=daysUntil(opt.date);
+    const div=document.createElement("div");
+    div.className="cfg-opt"+(checked?" checked":"");
+    div.innerHTML=`<input type="checkbox" id="cfgchk-${opt.key}" ${checked?"checked":""}><div><div class="co-name">${escHtml(opt.label)}</div></div><span class="co-date">${formatDate(opt.date)}</span><span class="co-diff">${d>0?d+" days":"past"}</span>`;
+    div.querySelector("input").addEventListener("change",function(){
+      if(this.checked){
+        if(tempSelected.length>=5){this.checked=false;updateCfgNote();return;}
+        tempSelected.push(opt.key);div.classList.add("checked");
+      } else {
+        tempSelected=tempSelected.filter(k=>k!==opt.key);div.classList.remove("checked");
+      }
+      updateCfgNote();
+    });
+    list.appendChild(div);
+  });
+  updateCfgNote();
+  document.getElementById("cfg-overlay").classList.add("open");
+}
+
+function updateCfgNote(){
+  const n=document.getElementById("cfg-max-note");
+  n.textContent=`${tempSelected.length}/5 selected`;
+  n.style.color=tempSelected.length===5?"var(--green)":"var(--amber)";
+}
+
+function closeCfg(){document.getElementById("cfg-overlay").classList.remove("open");}
+function closeCfgOutside(e){if(e.target===document.getElementById("cfg-overlay"))closeCfg();}
+
+function saveCfg(){
+  selectedCountdowns=[...tempSelected];
+  closeCfg();
+  renderCountdown();
+}
+
+// ══════════════════════════════════════════════════════
+//  VIEWS
+// ══════════════════════════════════════════════════════
+function showView(v){
+  document.getElementById("view-dashboard").style.display=v==="dashboard"?"block":"none";
+  document.getElementById("view-list").style.display=v==="list"?"block":"none";
+  document.querySelectorAll(".view-btn").forEach((b,i)=>{
+    b.classList.toggle("active",(i===0&&v==="dashboard")||(i===1&&v==="list"));
+  });
+  if(v==="list") renderTable();
+}
+
+function filterBy(field,val){
+  activeFilterKey=field;activeFilterVal=val;
+  document.getElementById("filter-sep").style.display="inline";
+  document.getElementById("active-filter-tag").style.display="inline-flex";
+  document.getElementById("active-filter-text").textContent=val;
+  const selId=field==="topic"?"filter-topic":field==="issuer"?"filter-issuer":"filter-status";
+  const sel=document.getElementById(selId);
+  if(sel) sel.value=val;
+  showView("list");applyFilters();
+}
+
+function clearActiveFilter(){
+  activeFilterKey=null;activeFilterVal=null;
+  document.getElementById("filter-sep").style.display="none";
+  document.getElementById("active-filter-tag").style.display="none";
+  ["filter-topic","filter-issuer","filter-status"].forEach(id=>{document.getElementById(id).value="";});
+  document.getElementById("search-input").value="";
+  applyFilters();
+}
+
+function toggleNewFilter(){
+  showNewOnly=!showNewOnly;
+  document.getElementById("btn-new-filter").classList.toggle("active",showNewOnly);
+  applyFilters();
+}
+
+function clearAllFilters(){
+  showNewOnly=false;
+  document.getElementById("btn-new-filter").classList.remove("active");
+  clearActiveFilter();
+}
+
+// ══════════════════════════════════════════════════════
+//  TABLE
+// ══════════════════════════════════════════════════════
+function populateSelects(){
+  const topics=[...new Set(ITEMS.map(i=>i.topic))].sort();
+  const issuers=[...new Set(ITEMS.map(i=>i.issuer))].sort();
+  const statuses=[...new Set(ITEMS.map(i=>i.status))].sort();
+  function fill(id,opts){
+    const sel=document.getElementById(id);
+    opts.forEach(o=>{const op=document.createElement("option");op.value=o;op.textContent=o;sel.appendChild(op);});
+  }
+  fill("filter-topic",topics);fill("filter-issuer",issuers);fill("filter-status",statuses);
+}
+
+function getFiltered(){
+  const q=(document.getElementById("search-input").value||"").toLowerCase();
+  const topic=document.getElementById("filter-topic").value;
+  const issuer=document.getElementById("filter-issuer").value;
+  const status=document.getElementById("filter-status").value;
+  const sort=document.getElementById("filter-sort").value;
+  let arr=ITEMS.filter(item=>{
+    if(showNewOnly && !item.isNew) return false;
+    if(topic && item.topic!==topic) return false;
+    if(issuer && item.issuer!==issuer) return false;
+    if(status && item.status!==status) return false;
+    if(q){
+      const hay=[item.summary,item.topic,item.issuer,item.status,item.pubDate,item.appDate,item.impact].join(" ").toLowerCase();
+      if(!hay.includes(q)) return false;
+    }
+    return true;
+  });
+  arr.sort((a,b)=>{
+    if(sort==="cpxOrga") return b.cpxOrga-a.cpxOrga;
+    if(sort==="topic") return a.topic.localeCompare(b.topic);
+    if(sort==="issuer") return a.issuer.localeCompare(b.issuer);
+    if(sort==="status") return a.status.localeCompare(b.status);
+    return a.id-b.id;
+  });
+  return arr;
+}
+
+function applyFilters(){currentPage=1;renderTable();}
+
+function renderTable(){
+  const filtered=getFiltered();
+  const total=filtered.length;
+  const totalPages=Math.max(1,Math.ceil(total/PAGE_SIZE));
+  if(currentPage>totalPages) currentPage=totalPages;
+  const start=(currentPage-1)*PAGE_SIZE;
+  const slice=filtered.slice(start,start+PAGE_SIZE);
+  const tbody=document.getElementById("tbl-body");
+  if(!filtered.length){
+    tbody.innerHTML=`<tr><td colspan="8"><div class="empty-state"><div class="ei">🔍</div><p>No regulations match your filters.</p></div></td></tr>`;
+  } else {
+    tbody.innerHTML=slice.map(item=>`
+      <tr class="${item.isNew?'item-new':''}" onclick="openItem(ITEMS.find(i=>i.id===${item.id}))">
+        <td class="td-id">#${item.id}</td>
+        <td><span class="ttag">${escHtml(item.topic)}</span></td>
+        <td class="td-summary"><div class="td-summary-txt">${escHtml(item.summary)}</div></td>
+        <td class="td-date">${escHtml(item.pubDate)}</td>
+        <td class="td-issuer">${escHtml(item.issuer)}</td>
+        <td>${statusBadge(item.status)}</td>
+        <td class="td-cpx"><span class="cpill c${item.cpxOrga}" title="Orga: ${item.cpxOrga}">${item.cpxOrga}</span>&thinsp;<span class="cpill c${item.cpxIT}" title="IT: ${item.cpxIT}">${item.cpxIT}</span></td>
+        <td class="td-link"><a href="${escHtml(item.link)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ ${escHtml(domainShort(item.link))}</a></td>
+      </tr>`).join("");
+  }
+  document.getElementById("fcount").textContent=`${total} of ${ITEMS.length} regulations`;
+  const pgWrap=document.getElementById("pg-wrap");
+  document.getElementById("page-info").textContent=`Showing ${Math.min(start+1,total)}–${Math.min(start+PAGE_SIZE,total)} of ${total}`;
+  pgWrap.innerHTML="";
+  if(totalPages>1){
+    const mk=(lbl,pg,dis,act)=>{const b=document.createElement("button");b.className="pg-btn"+(act?" active":"");b.textContent=lbl;b.disabled=dis;b.onclick=()=>{currentPage=pg;renderTable();};return b;};
+    pgWrap.appendChild(mk("‹",currentPage-1,currentPage===1,false));
+    for(let p=1;p<=totalPages;p++){
+      if(totalPages<=7||p===1||p===totalPages||Math.abs(p-currentPage)<=1) pgWrap.appendChild(mk(p,p,false,p===currentPage));
+      else if(Math.abs(p-currentPage)===2){const sp=document.createElement("span");sp.textContent="…";sp.style.cssText="padding:4px 6px;color:var(--gray)";pgWrap.appendChild(sp);}
+    }
+    pgWrap.appendChild(mk("›",currentPage+1,currentPage===totalPages,false));
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  DETAIL PANEL
+// ══════════════════════════════════════════════════════
+function openItem(item){
+  if(!item) return;
+  document.getElementById("dp-id").textContent=`ITEM #${item.id} · ${item.topic}`;
+  document.getElementById("dp-title").textContent=item.summary.split("—")[0].trim();
+  document.getElementById("dp-topic").textContent=item.topic;
+  document.getElementById("dp-issuer").textContent=item.issuer;
+  document.getElementById("dp-status").innerHTML=statusBadge(item.status);
+  document.getElementById("dp-pubdate").textContent=item.pubDate;
+  document.getElementById("dp-appdate").textContent=item.appDate;
+  document.getElementById("dp-summary").textContent=item.summary;
+  document.getElementById("dp-impact").textContent=item.impact;
+  const banner=document.getElementById("dp-new-banner");
+  if(banner) banner.style.display=item.isNew?"flex":"none";
+  document.getElementById("dp-cpx-orga").textContent=item.cpxOrga;
+  document.getElementById("dp-cpx-it").textContent=item.cpxIT;
+  document.getElementById("dp-cpx-orga-bar").style.cssText=`width:${item.cpxOrga*20}%;background:${cpxColor(item.cpxOrga)}`;
+  document.getElementById("dp-cpx-it-bar").style.cssText=`width:${item.cpxIT*20}%;background:${cpxColor(item.cpxIT)}`;
+  document.getElementById("dp-link").href=item.link;
+  document.getElementById("panel-overlay").classList.add("open");
+  document.body.style.overflow="hidden";
+}
+
+function closePanel(e){
+  if(e&&e.target!==document.getElementById("panel-overlay")) return;
+  document.getElementById("panel-overlay").classList.remove("open");
+  document.body.style.overflow="";
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    document.getElementById("panel-overlay").classList.remove("open");
+    document.getElementById("cfg-overlay").classList.remove("open");
+    document.body.style.overflow="";
+  }
+});
+
+// ══════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════
+(function init(){
+  if(typeof BUILD_META !== "undefined"){
+    document.getElementById("hdr-badge").textContent="Last update: "+BUILD_META.lastUpdate;
+    if(BUILD_META.newCount > 0){
+      const badge=document.getElementById("nav-new-badge");
+      badge.textContent=BUILD_META.newCount;
+      badge.style.display="inline-flex";
+    }
+  }
+  populateSelects();
+  renderDashboard();
+  renderCountdown();
+
+  // Event delegation for dashboard rows (data-field / data-val)
+  // This avoids the inline-onclick double-quote quoting bug in Chrome.
+  document.getElementById("view-dashboard").addEventListener("click", function(e){
+    const row = e.target.closest(".drow[data-field]");
+    if(row) filterBy(row.dataset.field, row.dataset.val);
+  });
+})();
+</script>
+</body>
+</html>

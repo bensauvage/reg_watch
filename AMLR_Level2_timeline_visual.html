@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EU AML Package — Level 2 prospective timeline (as of 23 Jul 2026)</title>
+<style>
+body{font-family:Calibri,Segoe UI,Arial,sans-serif;font-size:13px;color:#1a1a1a;margin:24px;max-width:1100px}
+h1{font-size:20px;font-weight:600;margin:0 0 4px}
+.sub{color:#666;font-size:12px;margin:0 0 16px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:0 0 14px;font-size:12px;color:#555}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:14px;height:9px;border-radius:2px;display:inline-block}
+.row{display:flex;align-items:center;height:27px}
+.lbl{width:250px;flex:none;font-size:12px;line-height:1.15;padding-right:8px;display:flex;align-items:center;gap:5px;overflow:hidden}
+.badge{flex:none;font-size:11px;font-weight:600;border-radius:3px;padding:0 4px}
+.name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.name a{color:inherit;text-decoration:none;border-bottom:1px dotted #999}
+.name a:hover{color:#185FA5;border-bottom-color:#185FA5}
+.track{flex:1;position:relative;height:100%;border-bottom:1px solid #e5e5e5}
+.bar{position:absolute;top:8px;height:10px;cursor:pointer}
+.bar:hover{outline:1.5px solid #444;outline-offset:1px}
+.axis{position:relative;margin-left:250px;height:18px;font-size:11px;color:#888}
+.axis span{position:absolute;transform:translateX(-50%)}
+.note{color:#666;font-size:12px;margin-top:16px;line-height:1.5}
+.hint{color:#666;font-size:12px;margin:0 0 10px}
+</style>
+</head>
+<body>
+<h1>EU AML Package — prospective timeline to Level 2/3 live dates</h1>
+<p class="sub">Prepared 23 July 2026 from AMLA / European Commission official sources. Best case = 3+3+3 model (AMLA review, Commission adoption, EP/Council non-objection); realistic scenario assumes a longer Commission stage. ITS have no EP/Council veto; Guidelines skip the Commission (application aligned to 10 Jul 2027). Italic = pipeline instruments, dates estimated from AMLA SPD 2026&ndash;2028. Not legal advice.</p>
+<p class="hint"><b>How to use the links:</b> instrument name &rarr; the Level 1 &ldquo;original text&rdquo; on EUR-Lex (empowering article&rsquo;s regulation/directive). Clicking a bar opens the document for that stage: blue &rarr; consultation paper/page; yellow &rarr; AMLA final draft; red &rarr; adopted act in the Official Journal. Where a stage&rsquo;s text is not yet released (most of them, for now), the click falls back to the most advanced document actually available &mdash; the tooltip tells you which. These fallbacks will be replaced as texts are published.</p>
+<div class="legend">
+<span><span class="sw" style="background:#378ADD"></span>Consultation</span>
+<span><span class="sw" style="background:#EF9F27"></span>Adoption process (best case)</span>
+<span><span class="sw" style="background:#E24B4A"></span>Slippage to realistic date</span>
+<span><span class="sw" style="width:2px;height:12px;background:#A32D2D"></span>10 Jul 2027 — AMLR applies</span>
+</div>
+<div id="gantt" style="position:relative"></div>
+<p class="note">Companion file: <b>AMLR_Level2_prospective_timeline.xlsx</b> (same folder) — full milestone dates, monitoring checkpoints and editable assumptions. Sources: <a href="https://www.amla.europa.eu/policy/regulatory-instruments_en">AMLA Regulatory Instruments</a> &middot; <a href="https://www.amla.europa.eu/policy/public-consultations_en">AMLA Public Consultations</a> &middot; <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32024R1624">AMLR 2024/1624</a> &middot; <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32024L1640">AMLD6 2024/1640</a> &middot; <a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32024R1620">AMLAR 2024/1620</a> &middot; <a href="https://finance.ec.europa.eu/financial-crime_en">European Commission — financial crime</a> &middot; <a href="https://www.ebf.eu">EBF</a>.</p>
+<script>
+const T0=new Date(2025,11,1).getTime(), T1=new Date(2028,6,1).getTime();
+const pct=d=>((new Date(d).getTime()-T0)/(T1-T0)*100);
+const L1={
+AMLR:"https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32024R1624",
+AMLD:"https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32024L1640",
+AMLAR:"https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32024R1620"};
+const REG="https://www.amla.europa.eu/policy/regulatory-instruments_en";
+const AC="https://www.amla.europa.eu/policy/public-consultations/";
+// name, type, consult open, consult close, anchor, live best, live realistic, after-flag, estimated-flag,
+// L1 basis key, consultation URL (null = none yet), final-draft URL (null = not yet), adopted/OJ URL (null = not yet)
+const D=[
+["Selection for direct supervision (AMLAR 12(7))","RTS",null,null,"2025-12-18","2026-07-08","2026-10-18",0,0,"AMLAR",null,"https://www.amla.europa.eu/document/download/1c8bca18-fb5e-4b5e-afee-848111754238_en?filename=2.1_20251216_Final%20report%20-%20RTS%20under%20art.%2012%287%29%20AMLAR.pdf",null],
+["Risk profile of obliged entities, fin. (AMLD 40(2))","RTS",null,null,"2025-12-18","2026-07-08","2026-10-18",0,0,"AMLD",null,"https://www.amla.europa.eu/document/download/c8782141-45bf-4ef9-9d66-33e2f90e607e_en?filename=1.1_20251216_FINAL%20REPORT%20RTS%2040%282%29%20AMLD%20financial%20only_Final.pdf",null],
+["Supervisory cooperation, direct sup. (AMLAR 15(3))","ITS","2025-12-16","2026-01-27",null,"2026-08-16","2026-12-27",0,0,"AMLAR",AC+"consultation-draft-its-under-art-153-amlar_en",null,null],
+["Pecuniary sanctions (AMLD 53(10))","RTS","2026-02-09","2026-03-09",null,"2026-12-29","2027-05-09",0,0,"AMLD",AC+"consultation-draft-rts-pecuniary-sanctions-administrative-measures-and-periodic-penalty-payments_en",null,null],
+["Customer due diligence (AMLR 28(1))","RTS","2026-02-09","2026-05-08",null,"2027-02-28","2027-07-08",0,0,"AMLR",AC+"consultation-draft-rts-customer-due-diligence_en",null,null],
+["Business relationships & thresholds (AMLR 19(9))","RTS","2026-02-09","2026-05-08",null,"2027-02-28","2027-07-08",0,0,"AMLR",AC+"consultation-draft-rts-criteria-identifying-business-relationships-occasional-and-linked_en",null,null],
+["Group-wide requirements (AMLR 16(4), 17(3))","RTS","2026-04-16","2026-06-15",null,"2027-04-04","2027-08-14",1,0,"AMLR",AC+"consultation-draft-rts-group-wide-minimum-requirements-and-additional-measures-subsidiaries-and_en",null,null],
+["FIU / AMLA reporting to EPPO (AMLR 81(1))","ITS","2026-03-01","2026-05-31",null,"2026-12-20","2027-04-29",0,1,"AMLR","https://www.amla.europa.eu/events/public-hearing-draft-its-fiu-and-amla-reporting-eppo-2026-05-27_en",null,null],
+["FIU-to-FIU exchange format (AMLD 31(2))","ITS","2026-03-01","2026-05-31",null,"2026-12-20","2027-04-29",0,1,"AMLD","https://www.amla.europa.eu/events/public-hearing-draft-its-fiu-fiu-exchanges-2026-05-27_en",null,null],
+["Home-host supervisory cooperation (AMLD 46(4))","RTS","2026-03-01","2026-05-31",null,"2027-03-20","2027-07-30",1,1,"AMLD","https://www.amla.europa.eu/events/public-hearing-draft-rts-home-host-supervisory-cooperation-2026-05-28_en",null,null],
+["Business-wide risk assessment (AMLR 10(4))","GL","2026-04-16","2026-07-15",null,"2027-07-10","2027-07-10",0,0,"AMLR",AC+"consultation-draft-guidelines-business-wide-risk-assessment_en",null,null],
+["Ongoing / transaction monitoring (AMLR 26(5))","GL","2026-06-03","2026-09-03",null,"2027-07-10","2027-07-10",0,0,"AMLR",AC+"consultation-draft-guidelines-ongoing-monitoring-business-relationship_en",null,null],
+["STR format & transaction records (AMLR 69(3))","ITS","2026-07-02","2026-09-20",null,"2027-04-09","2027-08-19",1,0,"AMLR",AC+"consultation-draft-its-format-reporting-suspicions-and-providing-transaction-records_en",null,null],
+["FIU cross-border information exchange (AMLD 31(3))","RTS","2026-07-06","2026-10-06",null,"2027-07-26","2027-12-06",1,0,"AMLD",AC+"consultation-draft-rts-cross-border-information-exchange-between-financial-intelligence-units_en",null,null],
+["Central AML/CFT database (AMLAR 11(6))","RTS","2026-06-15","2026-09-15",null,"2027-07-05","2027-11-14",1,1,"AMLAR",null,null,null],
+["Risk variables & risk factors (AMLR 20(3))","GL","2026-09-15","2026-12-15",null,"2027-07-10","2027-07-10",0,1,"AMLR",null,null,null],
+["Central contact point (AMLD 41(2))","RTS","2026-09-15","2026-12-15",null,"2027-10-05","2028-02-14",1,1,"AMLD",null,null,null],
+["Risk profile — non-financial sector (AMLD 40(2))","RTS","2026-09-15","2026-12-15",null,"2027-10-05","2028-02-14",1,1,"AMLD",null,null,null],
+["Base amounts of sanctions (AMLD 53(11))","GL","2026-09-15","2026-12-15",null,"2027-07-10","2027-07-10",0,1,"AMLD",null,null,null],
+["Supervisory colleges (AMLD 49(14), 50(13))","RTS","2026-12-15","2027-03-15",null,"2028-01-04","2028-05-15",1,1,"AMLD",null,null,null],
+["Internal policies, procedures & controls (AMLR 9(4))","GL","2027-03-15","2027-06-15",null,"2027-09-15","2027-12-15",1,1,"AMLR",null,null,null]];
+const tcol={RTS:"#534AB7",ITS:"#0F6E56",GL:"#993C1D"};
+const tbg={RTS:"#EEEDFE",ITS:"#E1F5EE",GL:"#FAECE7"};
+// stage resolver: returns [url, tooltip] with graceful fallback to the most advanced available text
+function stageLink(r,stage){
+const cs=r[10],fin=r[11],adopt=r[12];
+if(stage==="consult"){
+if(cs)return[cs,"Consultation paper / page"];
+if(fin)return[fin,"No AMLA consultation ran (EBA consulted) — opens AMLA final report"];
+return[REG,"Consultation not yet opened — opens AMLA regulatory instruments overview"];}
+if(stage==="final"){
+if(fin)return[fin,"AMLA final draft (final report)"];
+if(cs)return[cs,"Final draft not yet published — opens latest available (consultation)"];
+return[REG,"Final draft not yet published — opens AMLA regulatory instruments overview"];}
+if(adopt)return[adopt,"Adopted act (Official Journal)"];
+if(fin)return[fin,"Not yet adopted / published in OJ — opens latest available (AMLA final report)"];
+if(cs)return[cs,"Not yet adopted / published in OJ — opens latest available (consultation)"];
+return[REG,"Not yet adopted — opens AMLA regulatory instruments overview"];}
+let h='<div class="axis">';
+["2026-01-01","2026-07-01","2027-01-01","2027-07-01","2028-01-01"].forEach(d=>{
+const lbl=new Date(d).toLocaleDateString('en-GB',{month:'short',year:'2-digit'});
+h+='<span style="left:'+pct(d).toFixed(1)+'%">'+lbl+'</span>';});
+h+='</div>';
+D.forEach((r,i)=>{
+const[name,typ,co,cc,anchor,best,real,after,est]=r;
+h+='<div class="row"><div class="lbl">';
+h+='<span class="badge" style="color:'+tcol[typ]+';background:'+tbg[typ]+'">'+typ+'</span>';
+h+='<span class="name"'+(est?' style="font-style:italic"':'')+'><a href="'+L1[r[9]]+'" target="_blank" rel="noopener" title="Original Level 1 text on EUR-Lex ('+r[9]+')">'+name+'</a></span></div><div class="track">';
+const bar=(a,b,c,rad,stage)=>{
+const l=Math.max(pct(a),0),w=Math.max(pct(b)-l,0.4);
+const[u,t]=stageLink(r,stage);
+return '<div class="bar" data-url="'+u+'" title="'+t+'" style="left:'+l.toFixed(2)+'%;width:'+w.toFixed(2)+'%;background:'+c+';border-radius:'+rad+'"></div>';};
+if(co&&cc)h+=bar(co,cc,"#378ADD","3px 0 0 3px","consult");
+h+=bar(cc||anchor,best,"#EF9F27","0","final");
+if(real>best)h+=bar(best,real,"#E24B4A","0 3px 3px 0","adopted");
+h+='<div style="position:absolute;top:5px;left:'+pct(real).toFixed(2)+'%;width:2px;height:16px;background:'+(after?"#A32D2D":"#444441")+'" title="Realistic live date"></div>';
+h+='</div></div>';});
+const g=document.getElementById('gantt');g.innerHTML=h;
+g.addEventListener('click',e=>{const b=e.target.closest('.bar');if(b&&b.dataset.url)window.open(b.dataset.url,'_blank','noopener');});
+const track=g.querySelector('.track');
+const line=document.createElement('div');
+function place(){
+const gr=g.getBoundingClientRect(),tr=track.getBoundingClientRect();
+line.style.cssText='position:absolute;top:18px;bottom:0;width:0;border-left:2px dashed #A32D2D;left:'+((tr.left-gr.left)+tr.width*pct("2027-07-10")/100)+'px;pointer-events:none';
+}
+g.appendChild(line);place();window.addEventListener('resize',place);
+</script>
+</body>
+</html>
